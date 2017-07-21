@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/main.css">
   </head>
   <body>
+    <?php incude 'html/header.php' ?>
     <textarea>
       <!--tinymce-->
     </textarea>
@@ -22,7 +23,8 @@
       <input id="btnReload" type="button" value="Reload"/>
       <input id="btnNew" type="button" value="New Spec"/>
     </div>
-    
+    <?php incude 'html/sideBar.php' ?>
+    <?php incude 'html/footer.php' ?>
     <script src="https://cloud.tinymce.com/stable/tinymce.min.js?apiKey=i777wu96ia6kbekuf05skbp9565wrw0ovwgw5oxwzfi2gxlx"></script>
     <script src="js/rita-full.js" charset="utf-8"></script>
     <script src="js/p5.js" charset="utf-8"></script>
