@@ -1,15 +1,14 @@
-var canvas;
-var btnStart;
-var btnStop;
-var btnStep;
-var btnNew;
-var btnReload;
-var wrapper;
-var tinymce
+var btnTest = getElementByID("test");
+var tinymce;
+
+window.onload = function(){
+  setup();
+}
 
 tinymce.init({
   selector: 'textarea',
   height: 500,
+  min_width: 600,
   theme: 'modern',
   plugins: [
     'advlist autolink lists link image charmap print preview hr anchor pagebreak',
@@ -26,30 +25,16 @@ tinymce.init({
     { title: 'Test template 2', content: 'Test 2' }
   ],
   content_css: [
-    '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i'
+    '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
+    'css/main.css'
   ]
  });
 
 function setup(){
-  wrapper = document.getElementById('wrapper');
-  btnStart = document.getElementById('btnStart');
-  btnStop = document.getElementById('btnStop');
-  btnStep = document.getElementById('btnStep');
-  btnNew = document.getElementById('btnNew');
-  btnReload = document.getElementById('btnReload');
-
-
-  canvas = createCanvas(800,800);
-  canvas.parent(wrapper);
-
-  // btnStart.addEventListener('click',function(){clock.ticking = true});
-  // btnStop.addEventListener('click',function(){clock.ticking = false});
-  // btnStep.addEventListener('click',function(){clock.tick("one");});
-  // //btnNew.addEventListener('click',function(){  });
-  // btnReload.addEventListener('click',function() { location.reload(); });
+  btnTest.
 
 }
 
-function draw(){
+// function draw(){
 
-}
+// }
