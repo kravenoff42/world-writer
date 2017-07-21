@@ -31,7 +31,7 @@ tinymce.init({
  });
 
 function setup(){
-  btnTest.
+  // btnTest;
 
 }
 
