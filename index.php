@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="css/main.css">
   </head>
   <body>
+    <textarea>
+      <!--tinymce-->
+    </textarea>
     <div id="wrapper">
       <div id="stats">
 
@@ -19,7 +22,9 @@
       <input id="btnReload" type="button" value="Reload"/>
       <input id="btnNew" type="button" value="New Spec"/>
     </div>
-
+    
+    <script src="https://cloud.tinymce.com/stable/tinymce.min.js?apiKey=i777wu96ia6kbekuf05skbp9565wrw0ovwgw5oxwzfi2gxlx"></script>
+    <script src="js/rita-full.js" charset="utf-8"></script>
     <script src="js/p5.js" charset="utf-8"></script>
     <script src="js/p5.dom.js" charset="utf-8"></script>
     <!-- <script src="js/p5.sound.js" charset="utf-8"></script> -->
