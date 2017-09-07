@@ -1,20 +1,149 @@
-article{
-    display: inline-block;
-    width: 80%;
-    min-width: 800px;
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url(/img/fonts/MaterialIcons-Regular.eot); /* For IE6-8 */
+  src: local('Material Icons'),
+    local('MaterialIcons-Regular'),
+    url(/img/fonts/MaterialIcons-Regular.woff2) format('woff2'),
+    url(/img/fonts/MaterialIcons-Regular.woff) format('woff'),
+    url(/img/fonts/MaterialIcons-Regular.ttf) format('truetype');
 }
-aside{
-    display: inline-block;
-    width: 19%;
-    min-width: 200px;
-    background-color: #999;
+
+#btnNewBlank {
+  display: block;
+  text-align: right;
 }
-aside section{
-    height: 100%
+
+.navbar{
+  margin-bottom: 0 !important;
 }
-header{
+.mce-i-mylist {
+  background: url('/img/icons/format-list-checks.svg') no-repeat top left !important;
+  height: 32px !important;
+  width: 32px !important;
+  background-size: 32px !important;
+  padding-top: 50% !important;
+}
+#mceu_30-button{
+  padding: 2px ;
+}
+.q_head{
+    background-color: #444 !important;
+    padding: 6px !important;
+}
+.q_head h1{
+    color: #fff ;
+    padding: 6px !important;
+    font-size: larger;
+    text-align: center !important;
+}
+#q_list, #old_q_list{
+    margin: 0 !important;
+}
+.question_card{
+    list-style: none;
+    background-color: #fff !important;
+    box-shadow: 0px 2px 5px #555 !important;
+    margin: 6px !important;
+    padding: 6px !important;
+}
+.old_question_card{
+    list-style: none;
+    background-color: #ccc !important;
+    box-shadow: 0px 2px 5px #555 !important;
+    margin: 6px !important;
+    padding: 6px !important;
+    color: #555 !important;
+}
+.question{
+    width: 78% !important;
+    white-space: normal !important;
+    display: inline-table !important;
+}
+.question, .question a{
+    line-height: 24px !important;
+}
+.center{
+    margin-left: 47% !important;
+}
+.q_after{
+    padding: 6px !important;  
+}
+.q_after h1{
+    text-align: center !important;
+}
+.q_foot{
+    padding: 6px !important;
+}
+.q_div{
+    display: inline !important;
+}
+.hidden{
+    display: none !important;
+}
+.clickable{
+    cursor: pointer !important;
+}
+
+.relevanceSet{
+    display: none !important;
+}
+
+span[id^='chk'] i{
+    width: 24px !important;
+}
+div[id^='ddlWordCat']{
+    padding-left: 30% !important;
+}
+div[id^='ddlWordCat'] select{
+    border: 1px solid !important;
+}
+span[id^='dismiss']{
     
 }
-footer{
+i[id^='exp']{
     
 }
+.vertSpacer{
+    height: 1em;
+}
+.material-icons {
+  font-family: 'Material Icons' !important;
+  font-weight: normal !important;
+  font-style: normal !important;
+  font-size: 24px !important;  /* Preferred icon size */
+  display: inline-block !important;
+  line-height: 1 !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  word-wrap: normal !important;
+  white-space: normal !important;
+  direction: ltr !important;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased !important;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility !important;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale !important;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga' !important;
+}
+
+.badge{
+    float: right !important;
+    background-color: #444 !important;
+    border-radius: 50%;
+    color:#fff !important;
+    text-align: center!important;
+    vertical-align: middle !important;
+    width: 1.2em !important;
+    border-style: solid !important;
+    border-color: #fff !important;
+    border-width: thin !important;
+    font-size: smaller !important;
+}
+

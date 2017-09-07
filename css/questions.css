@@ -1,0 +1,101 @@
+
+.mce-i-mylist {
+  background: url('../../img/icons/format-list-checks.png') no-repeat top left ;
+  height: 32px ;
+  width: 32px ;
+  background-size: 32px ;
+}
+#mceu_30-button{
+  padding: 2px ;
+}
+.q_head{
+    background-color: #444 ;
+    padding: 6px !important;
+}
+.q_head h1{
+    color: #fff ;
+    padding: 6px !important;
+  text-align: center;
+  font-size: larger;
+}
+#q_list, #old_q_list{
+    margin: 0 !important;
+}
+.question_card{
+    list-style: none;
+    background-color: #fff ;
+    box-shadow: 0px 2px 5px #555 ;
+    margin: 6px !important;
+    padding: 6px ;
+}
+.old_question_card{
+    list-style: none;
+    background-color: #ccc ;
+    box-shadow: 0px 2px 5px #555 ;
+    margin: 6px !important;
+    padding: 6px;
+    color: #555 !important;
+}
+.question{
+    width: 78%;
+    white-space: normal;
+    display: inline-table;
+}
+.question, .question a{
+    line-height: 24px;
+}
+.center{
+    margin-left: 47% !important;
+}
+.q_after{
+    padding: 6px !important;
+}
+.q_after h1{
+    text-align: center !important;
+}
+.q_foot{
+    padding: 6px !important;
+}
+.q_div{
+    display: inline !important;
+}
+/*.q_div span, .q_div span i{*/
+/*    display: inline !important;*/
+/*}*/
+.hidden{
+    display: none;
+}
+#mceu_26-body{
+    width: 90% ;
+}
+.mce-sidebar-panel{
+    width: inherit;
+    min-width: 300px !important;
+}
+.clickable{
+    cursor: pointer;
+}
+
+.relevanceSet{
+    display: none;
+}
+
+span[id^='chk'] i{
+    /*display: inline !important;*/
+    width: 24px !important;
+}
+div[id^='ddlWordCat']{
+    padding-left: 30% !important;
+}
+div[id^='ddlWordCat'] select{
+    border: 1px solid !important;
+}
+span[id^='dismiss']{
+    
+}
+i[id^='exp']{
+    
+}
+.vertSpacer{
+    height: 1em;
+}
