@@ -27,8 +27,8 @@ class Question {
             for($i=0;$i<$words.length;$i++){
                 
                 $word = getWordsByID($wordID, $db);
-                $page_id = 
-                $temp = '<a href="'.__DIR__.'/page-Render.php?page_id='..'">'.$words[$i].'</a>';
+                $page_id = $word['pageID'];
+                $temp = '<a href="'.__DIR__.'/page-Render.php?page_id='.$page_id.'">'.$words[$i].'</a>';
                 array_push($wrapped, $temp);
             }
         }else{

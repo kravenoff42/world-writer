@@ -4,6 +4,7 @@ var dismissArr;
 var restoreArr;
 var expArr;
 var viewAll;
+var c_list;
 var q_list;
 var old_q_list;
 var q_after;
@@ -18,6 +19,7 @@ var badgeCount = 0;
 
 //Placeholder data
 var topics = [];
+var candidateTopics = [];
 var questions = [];
 for(var i = 0;i<7;i++){
     var q={};
@@ -72,11 +74,9 @@ function analyzeText(event){
 
   for(var i = 0; i <words.length;i++){
     if(pos[i]=="nnps" || pos[i]=="nnp"){
-      if(isCandidate(words[i])){
-        topics.push(words[i]);
-        console.log(words[i]);
-        // console.log(pos[i]);
-      }
+      candidateTopics.push(words[i]);
+      console.log(words[i]);
+      // console.log(pos[i]);
     }
   }
 }
@@ -109,23 +109,13 @@ function defineWord(){
     }
     console.log(text);
     topics.push(text);
+    renderCandidateTopics();
 }
 
-function isCandidate(n){
-  // if(!Number.isIntegar(n) &&
-  // !Number.isFloat(n)// &&
-  // //!genericNoun(n)
-  // ){
-  //   return true;
-  // }
-  return true;
-}
-
-function genericNoun(){
-  //google API for Entity analasys
-  //analyzeEntities
-  //POST https://language.googleapis.com/v1/documents:analyzeEntities?key=AIzaSyDz2T4xebSBc1RHW0W24eDuuCzFbm7PmfA
-
+function renderCandidateTopics(){
+  for(var i=0;i<candidateTopics.length;i++){
+    createCandidateCard(candidateTopics);
+  }
 }
 
 function getWords(){
@@ -249,6 +239,7 @@ function getElements(){
     restoreArr = document.querySelectorAll("[id^='restore']");
     expArr = document.querySelectorAll("[id^='exp']");
     viewAll = document.getElementById("viewAll");
+    c_list = document.getElementById("c_list");
     q_list = document.getElementById("q_list");
     old_q_list = document.getElementById("old_q_list");
     q_after = document.querySelectorAll(".q_after");
@@ -256,8 +247,7 @@ function getElements(){
 }
 
 function setListeners(){
-  console.log("setting listeners");
-    //events
+  //events
   if(chkArr){
       for(var i = 0; i<chkArr.length;i++){
         chkArr[i].addEventListener('click', setRelevance);
@@ -403,125 +393,41 @@ function renderQuestions(){
         disSpan.appendChild(disI);
         disDiv.appendChild(disSpan);
         
-        //select div
-        var ddlDiv = document.createElement("div");
-        ddlDiv.id = "ddlWordCat_"+questions[i].questionID;
-        ddlDiv.classList.add('hidden');
-        var ddl = document.createElement("select");
-        if(questions[i].relevant!==null){
-            ddl.setAttribute("disabled", "true");
-        }
-        for(var j = 0; j<arrVal.length;j++){
-            var opt = document.createElement("option");
-            opt.value = arrVal[j][0];
-            opt.label = arrVal[j][1];
-            if(questions[i].words[0].catAbbrev==arrVal[j][0]){
-                opt.selected = true;
-            }
-            ddl.options.add(opt);
-        }
-        ddlDiv.appendChild(ddl);
+        // //select div
+        // var ddlDiv = document.createElement("div");
+        // ddlDiv.id = "ddlWordCat_"+questions[i].questionID;
+        // ddlDiv.classList.add('hidden');
+        // var ddl = document.createElement("select");
+        // if(questions[i].relevant!==null){
+        //     ddl.setAttribute("disabled", "true");
+        // }
+        // for(var j = 0; j<arrVal.length;j++){
+        //     var opt = document.createElement("option");
+        //     opt.value = arrVal[j][0];
+        //     opt.label = arrVal[j][1];
+        //     if(questions[i].words[0].catAbbrev==arrVal[j][0]){
+        //         opt.selected = true;
+        //     }
+        //     ddl.options.add(opt);
+        // }
+        // ddlDiv.appendChild(ddl);
         
-        //expand div
-        var expDiv = document.createElement("div");
-        var expI = document.createElement('i');
-        expI.innerHTML = 'expand_more';
-        expI.id = 'exp_'+questions[i].questionID;
-        expI.classList.add('material-icons');
-        expI.classList.add('center');
-        expI.classList.add('clickable');
-        expDiv.appendChild(expI);
-        
-        //adding everything to list
-        qCard.appendChild(chkDiv);
-        qCard.appendChild(qDiv);
-        qCard.appendChild(disDiv);
-        qCard.appendChild(ddlDiv);
-        qCard.appendChild(expDiv);
-        if(questions[i].relevant===null){
-            if(!q_list){ getElements(); console.log(q_list); }
-            q_list.appendChild(qCard);
-            badgeCount++;
-        }else{
-            if(!old_q_list){ getElements(); console.log(old_q_list); }
-            old_q_list.appendChild(qCard);
-          
-        }
-        
-    }
-}
-
-function renderTopics(){
-    for(var i=0;i<questions.length;i++){
-        //card
-        var qCard = document.createElement("li");
-        if(questions[i].relevant==null){
-            qCard.classList.add('topic_card');
-        }else{
-            qCard.classList.add('old_question_card');
-        }
-        
-        //q div
-        var qDiv = document.createElement("div");
-        qDiv.classList.add('q_div');
-        var qSpan = document.createElement('span');
-        qSpan.id = 'qid_'+questions[i].questionID;
-        qSpan.classList.add('question');
-        qSpan.innerHTML = topics[i].topics;
-        qDiv.appendChild(qSpan);
-        
-        // dismiss div
-        var disDiv = document.createElement("div");
-        disDiv.classList.add('q_div');
-        var disSpan = document.createElement('span');
-        var disI = document.createElement('i');
-        if(questions[i].relevant===null){
-            disSpan.id = "dismiss_"+questions[i].questionID;
-            disI.innerHTML = 'not_interested';
-        }else{
-            disSpan.id = "restore_"+questions[i].questionID;
-            disI.innerHTML = 'refresh';
-        }        
-        disSpan.classList.add('clickable');
-        disI.classList.add('material-icons');
-        disSpan.appendChild(disI);
-        disDiv.appendChild(disSpan);
-        
-        //select div
-        var ddlDiv = document.createElement("div");
-        ddlDiv.id = "ddlWordCat_"+questions[i].questionID;
-        ddlDiv.classList.add('hidden');
-        var ddl = document.createElement("select");
-        if(questions[i].relevant!==null){
-            ddl.setAttribute("disabled", "true");
-        }
-        for(var j = 0; j<arrVal.length;j++){
-            var opt = document.createElement("option");
-            opt.value = arrVal[j][0];
-            opt.label = arrVal[j][1];
-            if(questions[i].words[0].catAbbrev==arrVal[j][0]){
-                opt.selected = true;
-            }
-            ddl.options.add(opt);
-        }
-        ddlDiv.appendChild(ddl);
-        
-        //expand div
-        var expDiv = document.createElement("div");
-        var expI = document.createElement('i');
-        expI.innerHTML = 'expand_more';
-        expI.id = 'exp_'+questions[i].questionID;
-        expI.classList.add('material-icons');
-        expI.classList.add('center');
-        expI.classList.add('clickable');
-        expDiv.appendChild(expI);
+        // //expand div
+        // var expDiv = document.createElement("div");
+        // var expI = document.createElement('i');
+        // expI.innerHTML = 'expand_more';
+        // expI.id = 'exp_'+questions[i].questionID;
+        // expI.classList.add('material-icons');
+        // expI.classList.add('center');
+        // expI.classList.add('clickable');
+        // expDiv.appendChild(expI);
         
         //adding everything to list
         qCard.appendChild(chkDiv);
         qCard.appendChild(qDiv);
         qCard.appendChild(disDiv);
-        qCard.appendChild(ddlDiv);
-        qCard.appendChild(expDiv);
+        // qCard.appendChild(ddlDiv);
+        // qCard.appendChild(expDiv);
         if(questions[i].relevant===null){
             if(!q_list){ getElements(); console.log(q_list); }
             q_list.appendChild(qCard);
@@ -536,6 +442,7 @@ function renderTopics(){
 }
 
 function clearQuestions(){
+    c_list.innerHTML="";
     q_list.innerHTML="";
     old_q_list.innerHTML="";
     badgeCount = 0;
@@ -553,7 +460,11 @@ function setContainers(){
   h1Tag.innerHTML = "Suggestions";
   qhead.appendChild(h1Tag);
   
-  //list
+  //candidate List
+  var cL = document.createElement('ul');
+  cL.id = "c_list";
+  
+  //question list
   var qL = document.createElement('ul');
   qL.id = "q_list";
   
@@ -590,6 +501,7 @@ function setContainers(){
   
   //adding elements to div
   qCon.appendChild(qhead);
+  qCon.appendChild(cL);
   qCon.appendChild(qL);
   qCon.appendChild(vSpc);
   qCon.appendChild(oldQL);
