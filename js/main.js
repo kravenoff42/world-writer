@@ -16,6 +16,7 @@ var newQuestionTemplate = document.getElementById("newQuestionTemplate");
 var textArea;
 var tinymce;
 var badgeCount = 0;
+var cats = new Categories();
 
 //Placeholder data
 var topics = [];
@@ -41,7 +42,6 @@ for(var i = 0;i<7;i++){
         q.words[0].catAbbrev = "Pla";
     questions.push(q);
 }
-  var arrVal = [["Per","Person"], ["Pla","Place"], ["Occ","Occupation"], ["Evt","Event"],["Obj", "Object"], ["Spc","Species"], ["Act","Action"], ["Ida","Idea"], ["Qlt","Quality"], ["GpO","Group-Object"], ["GpP","Group-Person"], ["GpI","Group-Idea"], ["GpE","Group-Event"]];
 
 window.onload = function(){
   //events
@@ -61,7 +61,13 @@ window.onload = function(){
 function periodPressed(event){
   if(event.keyCode == 190){
     analyzeText(event);
+    renderCandidateTopics();
   }
+}
+
+function contentChanged(event){
+  analyzeText(event);
+  renderCandidateTopics();
 }
 
 function analyzeText(event){
@@ -71,10 +77,12 @@ function analyzeText(event){
   var r = new RiString(text);
   var pos = r.pos();
   var words = r.words();
-
+      console.log("NEW CHECK");
+  candidateTopics = [];
   for(var i = 0; i <words.length;i++){
     if(pos[i]=="nnps" || pos[i]=="nnp"){
-      candidateTopics.push(words[i]);
+      var topicID = candidateTopics.length+1;
+      candidateTopics.push(new Topic(words[i],topicID));
       console.log(words[i]);
       // console.log(pos[i]);
     }
@@ -109,14 +117,21 @@ function defineWord(){
     }
     console.log(text);
     topics.push(text);
-    renderCandidateTopics();
+    
 }
 
 function renderCandidateTopics(){
   for(var i=0;i<candidateTopics.length;i++){
-    createCandidateCard(candidateTopics);
+    
+    var tCard = candidateTopics[i].createCandidateCard(i,cats);
+    if(c_list==null){ setContainers(); getElements(); console.log(c_list);  }
+    window.c_list.appendChild(tCard);
+    console.log(c_list);
+    badgeCount++;
   }
 }
+
+
 
 function getWords(){
 $.ajax({
@@ -157,7 +172,7 @@ tinymce.init({
   
   setup: function (editor) {
     
-    editor.on('change', analyzeText),
+    editor.on('change', contentChanged),
     editor.on('keyup', periodPressed),
     editor.addSidebar('mysidebar', {
       tooltip: 'My sidebar',
@@ -228,6 +243,7 @@ function getString(){
 function onStart(){
     getElements();
     renderQuestions();
+    renderCandidateTopics();
     getElements();
     setListeners();
 }
@@ -338,6 +354,7 @@ function upadateQuestionRelevantState(questionID, relevant){
 
 function updateQuestions(){
     clearQuestions();
+    renderCandidateTopics()
     renderQuestions();
     getElements();
     setListeners();
@@ -393,47 +410,16 @@ function renderQuestions(){
         disSpan.appendChild(disI);
         disDiv.appendChild(disSpan);
         
-        // //select div
-        // var ddlDiv = document.createElement("div");
-        // ddlDiv.id = "ddlWordCat_"+questions[i].questionID;
-        // ddlDiv.classList.add('hidden');
-        // var ddl = document.createElement("select");
-        // if(questions[i].relevant!==null){
-        //     ddl.setAttribute("disabled", "true");
-        // }
-        // for(var j = 0; j<arrVal.length;j++){
-        //     var opt = document.createElement("option");
-        //     opt.value = arrVal[j][0];
-        //     opt.label = arrVal[j][1];
-        //     if(questions[i].words[0].catAbbrev==arrVal[j][0]){
-        //         opt.selected = true;
-        //     }
-        //     ddl.options.add(opt);
-        // }
-        // ddlDiv.appendChild(ddl);
-        
-        // //expand div
-        // var expDiv = document.createElement("div");
-        // var expI = document.createElement('i');
-        // expI.innerHTML = 'expand_more';
-        // expI.id = 'exp_'+questions[i].questionID;
-        // expI.classList.add('material-icons');
-        // expI.classList.add('center');
-        // expI.classList.add('clickable');
-        // expDiv.appendChild(expI);
-        
         //adding everything to list
         qCard.appendChild(chkDiv);
         qCard.appendChild(qDiv);
         qCard.appendChild(disDiv);
-        // qCard.appendChild(ddlDiv);
-        // qCard.appendChild(expDiv);
         if(questions[i].relevant===null){
-            if(!q_list){ getElements(); console.log(q_list); }
+            if(q_list==null){ getElements(); console.log(q_list); }
             q_list.appendChild(qCard);
             badgeCount++;
         }else{
-            if(!old_q_list){ getElements(); console.log(old_q_list); }
+            if(old_q_list==null){ getElements(); console.log(old_q_list); }
             old_q_list.appendChild(qCard);
           
         }

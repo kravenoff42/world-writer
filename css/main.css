@@ -38,10 +38,10 @@
     font-size: larger;
     text-align: center !important;
 }
-#q_list, #old_q_list{
+#c_list, #q_list, #old_q_list{
     margin: 0 !important;
 }
-.question_card{
+.question_card, .topic_card{
     list-style: none;
     background-color: #fff !important;
     box-shadow: 0px 2px 5px #555 !important;
@@ -61,7 +61,10 @@
     white-space: normal !important;
     display: inline-table !important;
 }
-.question, .question a{
+.topic{
+    white-space: normal !important;
+}
+.question, .topic{
     line-height: 24px !important;
 }
 .center{
@@ -93,16 +96,10 @@
 span[id^='chk'] i{
     width: 24px !important;
 }
-div[id^='ddlWordCat']{
-    padding-left: 30% !important;
-}
-div[id^='ddlWordCat'] select{
-    border: 1px solid !important;
+select[id^='ddlWordCat'] select{
+    border: 1px solid #000 !important;
 }
 span[id^='dismiss']{
-    
-}
-i[id^='exp']{
     
 }
 .vertSpacer{

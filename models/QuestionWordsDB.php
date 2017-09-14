@@ -4,14 +4,14 @@ function deleteQuestionWord($questionID, $wordID, $db) {
     try {
     
         // calling stored procedure command
-        $sql = 'CALL deleteQuestionWord(@questionID,@wordID)';
+        $sql = "CALL deleteQuestionWord(:questionID,:wordID)";
     
         // prepare for execution of the stored procedure
         $stmt = $db->prepare($sql);
     
         // pass value to the command
-        $stmt->bindParam('@questionID', $questionID, PDO::PARAM_INT);
-        $stmt->bindParam('@wordID', $wordID, PDO::PARAM_INT);
+        $stmt->bindParam(':questionID', $questionID, PDO::PARAM_INT);
+        $stmt->bindParam(':wordID', $wordID, PDO::PARAM_INT);
     
         // execute the stored procedure
         $stmt->execute();
@@ -21,13 +21,12 @@ function deleteQuestionWord($questionID, $wordID, $db) {
     } catch (PDOException $e) {
         die("Error occurred:" . $e->getMessage());
     }
-    return null;
 } 
 function getQuestionWordsAll($db) { 
     try {
         $qwords = array();
         // calling stored procedure command
-        $sql = 'CALL getQuestionWordsAll()';
+        $sql = "CALL getQuestionWordsAll()";
     
         // prepare for execution of the stored procedure
         $stmt = $db->prepare($sql);
@@ -38,11 +37,7 @@ function getQuestionWordsAll($db) {
         $stmt->setFetchMode(PDO::FETCH_ASSOC);
 
         while ($row = $stmt->fetch()):
-            $p1 = htmlspecialchars($row['questionID']);
-            $p2 = htmlspecialchars($row['wordID']);
-            $p3 = htmlspecialchars($row['wordPosition']);
-            $qw = new QuestionWord($p1,$p2,$p3);
-            array_push($qwords,$qw);
+            array_push($qwords,$row);
         endwhile;
 
         $stmt->closeCursor();
@@ -50,19 +45,19 @@ function getQuestionWordsAll($db) {
     } catch (PDOException $e) {
         die("Error occurred:" . $e->getMessage());
     }
-    return $users;
+    echo json_encode($qwords);
 } 
 function getQuestionsByWord($wordID, $db) { 
     try {
         $qwords = array();
         // calling stored procedure command
-        $sql = 'CALL getQuestionsByWord(@wordID)';
+        $sql = "CALL getQuestionsByWord(:wordID)";
     
         // prepare for execution of the stored procedure
         $stmt = $db->prepare($sql);
     
         // pass value to the command
-        $stmt->bindParam('@wordID', $wordID, PDO::PARAM_INT);
+        $stmt->bindParam(':wordID', $wordID, PDO::PARAM_INT);
     
         // execute the stored procedure
         $stmt->execute();
@@ -70,11 +65,7 @@ function getQuestionsByWord($wordID, $db) {
         $stmt->setFetchMode(PDO::FETCH_ASSOC);
 
         while ($row = $stmt->fetch()):
-            $p1 = htmlspecialchars($row['questionID']);
-            $p2 = $wordID;
-            $p3 = htmlspecialchars($row['wordPosition']);
-            $qw = new QuestionWord($p1,$p2,$p3);
-            array_push($qwords,$qw);
+            array_push($qwords,$row);
         endwhile;
 
         $stmt->closeCursor();
@@ -82,19 +73,19 @@ function getQuestionsByWord($wordID, $db) {
     } catch (PDOException $e) {
         die("Error occurred:" . $e->getMessage());
     }
-    return $qwords;
+    echo json_encode($qwords);
 } 
 function getWordByQuestion($questionID, $db) { 
     try {
         $qwords = array();
         // calling stored procedure command
-        $sql = 'CALL getWordByQuestion(@questionID)';
+        $sql = "CALL getWordByQuestion(:questionID)";
     
         // prepare for execution of the stored procedure
         $stmt = $db->prepare($sql);
     
         // pass value to the command
-        $stmt->bindParam('@questionID', $questionID, PDO::PARAM_INT);
+        $stmt->bindParam(':questionID', $questionID, PDO::PARAM_INT);
     
         // execute the stored procedure
         $stmt->execute();
@@ -102,11 +93,7 @@ function getWordByQuestion($questionID, $db) {
         $stmt->setFetchMode(PDO::FETCH_ASSOC);
 
         while ($row = $stmt->fetch()):
-            $p1 = $questionID;
-            $p2 = htmlspecialchars($row['wordID']);
-            $p3 = htmlspecialchars($row['wordPosition']);
-            $qw = new QuestionWord($p1,$p2,$p3);
-            array_push($qwords,$qw);
+            array_push($qwords,$row);
         endwhile;
 
         $stmt->closeCursor();
@@ -114,13 +101,64 @@ function getWordByQuestion($questionID, $db) {
     } catch (PDOException $e) {
         die("Error occurred:" . $e->getMessage());
     }
-    return $qwords;
+    echo json_encode($qwords);
 } 
 function insertQuestionWord($questionID, $wordID, $wordPosition, $db) { 
-    print'Inside `aMemberFunc()`'; 
+    try {
+        $qwords = array();
+        // calling stored procedure command
+        $sql = "CALL insertQuestionWord(:questionID ,:wordID,:wordPosition)";
+    
+        // prepare for execution of the stored procedure
+        $stmt = $db->prepare($sql);
+    
+        // pass value to the command
+        $stmt->bindParam(':questionID', $questionID, PDO::PARAM_INT);
+        $stmt->bindParam(':wordID', $wordID, PDO::PARAM_INT);
+        $stmt->bindParam(':wordPosition', $wordPosition, PDO::PARAM_INT);
+        
+        //echo var_dump($catName, $catAbbrev, $db);
+        // execute the stored procedure
+        $stmt->execute();
+    
+        $stmt->setFetchMode(PDO::FETCH_ASSOC);
+
+        while ($row = $stmt->fetch()):
+            array_push($qwords,$row);
+        endwhile;
+
+        $stmt->closeCursor();
+    
+    } catch (PDOException $e) {
+        die("Error occurred:" . $e->getMessage());
+    }
+    echo json_encode($qwords);
 } 
 function updateQuestionWord($questionID, $wordID, $wordPosition, $db) { 
-    print'Inside `aMemberFunc()`'; 
+    try {
+        $qwords = array();
+        // calling stored procedure command
+        $sql = "CALL updateQuestionWord(:questionID ,:wordID,:wordPosition)";
+    
+        // prepare for execution of the stored procedure
+        $stmt = $db->prepare($sql);
+    
+        // pass value to the command
+        $stmt->bindParam(':questionID', $questionID, PDO::PARAM_INT);
+        $stmt->bindParam(':wordID', $wordID, PDO::PARAM_INT);
+        $stmt->bindParam(':wordPosition', $wordPosition, PDO::PARAM_INT);
+        
+        //echo var_dump($catName, $catAbbrev, $db);
+        // execute the stored procedure
+        $stmt->execute();
+    
+        $stmt->setFetchMode(PDO::FETCH_ASSOC);
+
+        $stmt->closeCursor();
+    
+    } catch (PDOException $e) {
+        die("Error occurred:" . $e->getMessage());
+    }
 } 
 
 ?>

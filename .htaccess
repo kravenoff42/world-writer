@@ -1,33 +1,36 @@
 RewriteEngine On    # Turn on the rewriting engine
 # User Pages
-RewriteRule    ^home/?$    html/user/landing.php    [NC,L]    # Landing Page
-RewriteRule    ^([A-Za-z0-9-]+)/page/([0-9]+)/edit/?$    html/user/page.php?page_id=$1    [NC,L]    # Page Editor
-RewriteRule    ^([A-Za-z0-9-]+)/?$    html/user/profile.php?user_id=$1     [NC,L]    # Profile Page
-RewriteRule    ^([A-Za-z0-9-]+)/project/([A-Za-z0-9-]+)/?$    html/user/project.php?proj_id=$1    [NC,L]    # Project Page
-RewriteRule    ^([A-Za-z0-9-]+)/page/([0-9]+)/?$    html/user/page-rendered.php?page_id=$1    [NC,L]    # Page Rendered
-RewriteRule    ^explore/?$    html/user/browse-projects.php    [NC,L]    # Browse Projects
-RewriteRule    ^contact/?$    html/user/contact.php    [NC,L]    # Contact
-RewriteRule    ^signup/?$    html/user/signup.php    [NC,L]    # Signup
-RewriteRule    ^login/?$    html/user/login.php    [NC,L]    # Login
-RewriteRule    ^logout/?$    html/user/logout.php    [NC,L]    # Logout
-RewriteRule    ^password/edit/?$    html/user/password.php?user_id=$1    [NC,L]    # Change Password
-RewriteRule    ^([A-Za-z0-9-]+)/edit/?$    html/user/edit-profile.php?user_id=$1    [NC,L]    # Edit Profile
-RewriteRule    ^([A-Za-z0-9-]+)/project/([A-Za-z0-9-]+)/edit/?$    html/user/edit-project.php?proj_id=$1    [NC,L]    # Edit Project
+RewriteRule    ^home/new?$    html/user/landing.php    [NC,L]    # Landing Page
+RewriteRule    ^home/save?$    html/user/landing.php    [NC,L]    # Landing Page
+RewriteRule    ^home/load?$    html/user/landing.php    [NC,L]    # Landing Page
+RewriteRule    ^contact?$    html/user/landing.php    [NC,L]    # Landing Page
+# RewriteRule    ^([A-Za-z0-9-]+)/page/([0-9]+)/edit/?$    html/user/page.php?page_id=$1    [NC,L]    # Page Editor
+# RewriteRule    ^([A-Za-z0-9-]+)/?$    html/user/profile.php?user_id=$1     [NC,L]    # Profile Page
+# RewriteRule    ^([A-Za-z0-9-]+)/project/([A-Za-z0-9-]+)/?$    html/user/project.php?proj_id=$1    [NC,L]    # Project Page
+# RewriteRule    ^([A-Za-z0-9-]+)/page/([0-9]+)/?$    html/user/page-rendered.php?page_id=$1    [NC,L]    # Page Rendered
+# RewriteRule    ^explore/?$    html/user/browse-projects.php    [NC,L]    # Browse Projects
+# RewriteRule    ^contact/?$    html/user/contact.php    [NC,L]    # Contact
+# RewriteRule    ^signup/?$    html/user/signup.php    [NC,L]    # Signup
+# RewriteRule    ^login/?$    html/user/login.php    [NC,L]    # Login
+# RewriteRule    ^logout/?$    html/user/logout.php    [NC,L]    # Logout
+# RewriteRule    ^password/edit/?$    html/user/password.php?user_id=$1    [NC,L]    # Change Password
+# RewriteRule    ^([A-Za-z0-9-]+)/edit/?$    html/user/edit-profile.php?user_id=$1    [NC,L]    # Edit Profile
+# RewriteRule    ^([A-Za-z0-9-]+)/project/([A-Za-z0-9-]+)/edit/?$    html/user/edit-project.php?proj_id=$1    [NC,L]    # Edit Project
 
 # Admin Pages
 
-RewriteRule    ^admin/?$    html/admin/dashboard.php    [NC,L]    # Admin Dashboard
-RewriteRule    ^admin/messages/?$    html/admin/messages.php    [NC,L]    # Admin Messages
-RewriteRule    ^admin/users/?$    html/admin/users.php    [NC,L]    # Admin Users
-RewriteRule    ^admin/user/([0-9]+)/?$    html/admin/user.php?user_id=$1     [NC,L]    # Admin _User Edit
-RewriteRule    ^admin/user/add/?$    html/admin/user.php    [NC,L]    # Admin _User Add
-RewriteRule    ^admin/questions/?$    html/admin/questions.php    [NC,L]    # Admin Questions
-RewriteRule    ^admin/question/([0-9]+)/?$    html/admin/question.php?ques_id=$1     [NC,L]    # Admin Question Edit
-RewriteRule    ^admin/question/add/?$    html/admin/question.php    [NC,L]    # Admin Question Add
-RewriteRule    ^admin/projects/?$    html/admin/projects.php    [NC,L]    # Admin Projects
-RewriteRule    ^admin/project/([0-9]+)/?$    html/admin/project.php?proj_id=$1    [NC,L]    # Admin Project Edit
-RewriteRule    ^admin/project/add/?$   html/admin/project.php    [NC,L]    # Admin Project Add
-RewriteRule    ^admin/pages/?$    html/admin/pages.php    [NC,L]    # Admin Pages
-RewriteRule    ^admin/page/([0-9]+)/?$    html/admin/page.php?page_id=$1     [NC,L]    # Admin Page Edit
-RewriteRule    ^admin/page/add/?$   html/admin/page.php    [NC,L]    # Admin Page Add
+RewriteRule    ^admin/newTemp?$    index.php?action=newTemp    [NC,L]    # Admin Dashboard
+# RewriteRule    ^admin/messages/?$    html/admin/messages.php    [NC,L]    # Admin Messages
+# RewriteRule    ^admin/users/?$    html/admin/users.php    [NC,L]    # Admin Users
+# RewriteRule    ^admin/user/([0-9]+)/?$    html/admin/user.php?user_id=$1     [NC,L]    # Admin _User Edit
+# RewriteRule    ^admin/user/add/?$    html/admin/user.php    [NC,L]    # Admin _User Add
+# RewriteRule    ^admin/questions/?$    html/admin/questions.php    [NC,L]    # Admin Questions
+# RewriteRule    ^admin/question/([0-9]+)/?$    html/admin/question.php?ques_id=$1     [NC,L]    # Admin Question Edit
+# RewriteRule    ^admin/question/add/?$    html/admin/question.php    [NC,L]    # Admin Question Add
+# RewriteRule    ^admin/projects/?$    html/admin/projects.php    [NC,L]    # Admin Projects
+# RewriteRule    ^admin/project/([0-9]+)/?$    html/admin/project.php?proj_id=$1    [NC,L]    # Admin Project Edit
+# RewriteRule    ^admin/project/add/?$   html/admin/project.php    [NC,L]    # Admin Project Add
+# RewriteRule    ^admin/pages/?$    html/admin/pages.php    [NC,L]    # Admin Pages
+# RewriteRule    ^admin/page/([0-9]+)/?$    html/admin/page.php?page_id=$1     [NC,L]    # Admin Page Edit
+# RewriteRule    ^admin/page/add/?$   html/admin/page.php    [NC,L]    # Admin Page Add
 

@@ -4,13 +4,13 @@ function deleteTemplate($tempID, $db) {
     try {
     
         // calling stored procedure command
-        $sql = 'CALL deleteTemplate(@tempID)';
+        $sql = "CALL deleteTemplate(:tempID)";
     
         // prepare for execution of the stored procedure
         $stmt = $db->prepare($sql);
     
         // pass value to the command
-        $stmt->bindParam('@tempID', $tempID, PDO::PARAM_INT);
+        $stmt->bindParam(':tempID', $tempID, PDO::PARAM_INT);
 
         // execute the stored procedure
         $stmt->execute();
@@ -20,19 +20,18 @@ function deleteTemplate($tempID, $db) {
     } catch (PDOException $e) {
         die("Error occurred:" . $e->getMessage());
     }
-    return null;
 } 
 function getTemplateByCategory($catID, $db) { 
     try {
         $templates = array();
         // calling stored procedure command
-        $sql = 'CALL getTemplateByCategory(@catID)';
+        $sql = "CALL getTemplateByCategory(:catID)";
     
         // prepare for execution of the stored procedure
         $stmt = $db->prepare($sql);
     
         // pass value to the command
-        $stmt->bindParam('@catID', $catID, PDO::PARAM_INT);
+        $stmt->bindParam(':catID', $catID, PDO::PARAM_INT);
     
         // execute the stored procedure
         $stmt->execute();
@@ -40,12 +39,7 @@ function getTemplateByCategory($catID, $db) {
         $stmt->setFetchMode(PDO::FETCH_ASSOC);
 
         while ($row = $stmt->fetch()):
-            $p1 = htmlspecialchars($row['tempID']);
-            $p2 = $catID;
-            $p3 = htmlspecialchars($row['template']);
-            $p4 = htmlspecialchars($row['varCnt']);
-            $t = new Template($p1,$p2,$p3,$p4);
-            array_push($templates,$t);
+            array_push($templates,$row);
         endwhile;
 
         $stmt->closeCursor();
@@ -53,19 +47,19 @@ function getTemplateByCategory($catID, $db) {
     } catch (PDOException $e) {
         die("Error occurred:" . $e->getMessage());
     }
-    return $templates;
+    echo json_encode($templates);
 } 
 function getTemplateByCount($varCnt, $db) { 
     try {
         $templates = array();
         // calling stored procedure command
-        $sql = 'CALL getTemplateByID(@varCnt)';
+        $sql = "CALL getTemplateByID(:varCnt)";
     
         // prepare for execution of the stored procedure
         $stmt = $db->prepare($sql);
     
         // pass value to the command
-        $stmt->bindParam('@varCnt', $varCnt, PDO::PARAM_INT);
+        $stmt->bindParam(':varCnt', $varCnt, PDO::PARAM_INT);
     
         // execute the stored procedure
         $stmt->execute();
@@ -73,12 +67,7 @@ function getTemplateByCount($varCnt, $db) {
         $stmt->setFetchMode(PDO::FETCH_ASSOC);
 
         while ($row = $stmt->fetch()):
-            $p1 = htmlspecialchars($row['tempID']);
-            $p2 = htmlspecialchars($row['catID']);
-            $p3 = htmlspecialchars($row['template']);
-            $p4 = $varCnt;
-            $t = new Template($p1,$p2,$p3,$p4);
-            array_push($templates,$t);
+            array_push($templates,$row);
         endwhile;
 
         $stmt->closeCursor();
@@ -86,19 +75,19 @@ function getTemplateByCount($varCnt, $db) {
     } catch (PDOException $e) {
         die("Error occurred:" . $e->getMessage());
     }
-    return $templates;
+    echo json_encode($templates);
 } 
 function getTemplateByID($tempID, $db) { 
     try {
         $templates = array();
         // calling stored procedure command
-        $sql = 'CALL getTemplateByID(@tempID)';
+        $sql = "CALL getTemplateByID(:tempID)";
     
         // prepare for execution of the stored procedure
         $stmt = $db->prepare($sql);
     
         // pass value to the command
-        $stmt->bindParam('@tempID', $tempID, PDO::PARAM_INT);
+        $stmt->bindParam(':tempID', $tempID, PDO::PARAM_INT);
     
         // execute the stored procedure
         $stmt->execute();
@@ -106,12 +95,7 @@ function getTemplateByID($tempID, $db) {
         $stmt->setFetchMode(PDO::FETCH_ASSOC);
 
         while ($row = $stmt->fetch()):
-            $p1 = $tempID;
-            $p2 = htmlspecialchars($row['catID']);
-            $p3 = htmlspecialchars($row['template']);
-            $p4 = htmlspecialchars($row['varCnt']);
-            $t = new Template($p1,$p2,$p3,$p4);
-            array_push($templates,$t);
+            array_push($templates,$row);
         endwhile;
 
         $stmt->closeCursor();
@@ -119,13 +103,13 @@ function getTemplateByID($tempID, $db) {
     } catch (PDOException $e) {
         die("Error occurred:" . $e->getMessage());
     }
-    return $templates;
+    echo json_encode($templates);
 } 
 function getTemplatesAll($db) { 
     try {
         $templates = array();
         // calling stored procedure command
-        $sql = 'CALL getTemplatesAll()';
+        $sql = "CALL getTemplatesAll()";
     
         // prepare for execution of the stored procedure
         $stmt = $db->prepare($sql);
@@ -136,12 +120,7 @@ function getTemplatesAll($db) {
         $stmt->setFetchMode(PDO::FETCH_ASSOC);
 
         while ($row = $stmt->fetch()):
-            $p1 = htmlspecialchars($row['tempID']);
-            $p2 = htmlspecialchars($row['catID']);
-            $p3 = htmlspecialchars($row['template']);
-            $p4 = htmlspecialchars($row['varCnt']);
-            $t = new Template($p1,$p2,$p3,$p4);
-            array_push($templates,$t);
+            array_push($templates,$row);
         endwhile;
 
         $stmt->closeCursor();
@@ -149,13 +128,61 @@ function getTemplatesAll($db) {
     } catch (PDOException $e) {
         die("Error occurred:" . $e->getMessage());
     }
-    return $templates;
+    echo json_encode($templates);
 } 
 function insertTemplate($catID, $template, $varCnt, $db) { 
-    print'Inside `aMemberFunc()`'; 
+    try {
+        $templates = array();
+        // calling stored procedure command
+        $sql = "CALL insertTemplate(:catID ,:template,:varCnt)";
+    
+        // prepare for execution of the stored procedure
+        $stmt = $db->prepare($sql);
+    
+        // pass value to the command
+        $stmt->bindParam(':catID', $catID, PDO::PARAM_INT);
+        $stmt->bindParam(':template', $template);
+        $stmt->bindParam(':varCnt', $varCnt, PDO::PARAM_INT);
+        
+        // execute the stored procedure
+        $stmt->execute();
+    
+        $stmt->setFetchMode(PDO::FETCH_ASSOC);
+
+        while ($row = $stmt->fetch()):
+            array_push($templates,$row);
+        endwhile;
+
+        $stmt->closeCursor();
+    
+    } catch (PDOException $e) {
+        die("Error occurred:" . $e->getMessage());
+    }
+    echo json_encode($templates);
 } 
 function updateTemplate($tempID, $catID, $template, $varCnt, $db) { 
-    print'Inside `aMemberFunc()`'; 
+    try {
+        $templates = array();
+        // calling stored procedure command
+        $sql = "CALL updateTemplate(:tempID, :catID ,:template,:varCnt)";
+    
+        // prepare for execution of the stored procedure
+        $stmt = $db->prepare($sql);
+    
+        // pass value to the command
+        $stmt->bindParam(':tempID', $tempID, PDO::PARAM_INT);
+        $stmt->bindParam(':catID', $catID, PDO::PARAM_INT);
+        $stmt->bindParam(':template', $template);
+        $stmt->bindParam(':varCnt', $varCnt, PDO::PARAM_INT);
+        
+        // execute the stored procedure
+        $stmt->execute();
+
+        $stmt->closeCursor();
+    
+    } catch (PDOException $e) {
+        die("Error occurred:" . $e->getMessage());
+    }
 } 
 
 ?>

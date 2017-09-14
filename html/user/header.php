@@ -14,34 +14,19 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
           
-        <li><a href="#">Explore</a></li>
-        <li><a href="#">Contact</a></li>
-        <li><a href="#">Get Started</a></li>
+        <li><a href="/home/new">New</a></li>
+        <li><a href="/home/save">Save</a></li>
+        <li><a href="/home/load">Load</a></li>
 
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
-        
         <?php 
-        if($_SESSION['valid']){
-            if($_SESSION['admin']){?>
-                <li><a href="#">Admin</a></li>
-            <?php } ?>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">User <span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-               <li><a href="#">Profile</a></li>
-                <li><a href="#">My Projects</a></li>
-                <li><a href="#">My Favorites</a></li>
-                <li class="divider"></li>
-                <li><a href="#">Logout</a></li>
-              </ul>
-            </li>
-            <?php }else{ ?>
-                <li><a href="#">Signup</a></li>
-                <li><a href="#">Login</a></li>
-            <?php }
-          ?>
+          if($_SESSION['admin']){?>
+              <li><a href="/admin/newTemp">Admin</a></li>
+      <?php } ?>
+                
+          <li><a href="/contact">Contact</a></li>
       </ul>
       
     </div><!-end collapse>

@@ -82,3 +82,6 @@ function getCategoryByAbbrev(){
     
 }
 */
+
+Question.prototype.createQuestionCard = function() { 
+}

@@ -4,13 +4,13 @@ function deleteCategory($catID, $db) {
     try {
     
         // calling stored procedure command
-        $sql = 'CALL deleteCategory(@catID)';
+        $sql = "CALL deleteCategory(:catID)";
     
         // prepare for execution of the stored procedure
         $stmt = $db->prepare($sql);
     
         // pass value to the command
-        $stmt->bindParam('@catID', $catID, PDO::PARAM_INT);
+        $stmt->bindParam(':catID', $catID, PDO::PARAM_INT);
 
         // execute the stored procedure
         $stmt->execute();
@@ -20,13 +20,12 @@ function deleteCategory($catID, $db) {
     } catch (PDOException $e) {
         die("Error occurred:" . $e->getMessage());
     }
-    return null;
 } 
 function getCategoriesAll($db) { 
     try {
         $cats = array();
         // calling stored procedure command
-        $sql = 'CALL getCategoriesAll()';
+        $sql = "CALL getCategoriesAll()";
     
         // prepare for execution of the stored procedure
         $stmt = $db->prepare($sql);
@@ -37,11 +36,7 @@ function getCategoriesAll($db) {
         $stmt->setFetchMode(PDO::FETCH_ASSOC);
         
         while ($row = $stmt->fetch()):
-            $p1 = htmlspecialchars($row['catID']);
-            $p2 = htmlspecialchars($row['catAbbrev']);
-            $p3 = htmlspecialchars($row['catName']);
-            $c = new WordCategory($p1,$p2,$p3);
-            array_push($cats,$c);
+            array_push($cats,$row);
         endwhile;
         
         $stmt->closeCursor();
@@ -49,19 +44,19 @@ function getCategoriesAll($db) {
     } catch (PDOException $e) {
         die("Error occurred:" . $e->getMessage());
     }
-    return $cats;
+    echo json_encode($cats);
 } 
 function getCategoriesByAbbrev($catAbbrev, $db) { 
     try {
         $cats = array();
         // calling stored procedure command
-        $sql = 'CALL getCategoriesByAbbrev(@catAbbrev)';
+        $sql = "CALL getCategoriesByAbbrev(:catAbbrev)";
     
         // prepare for execution of the stored procedure
         $stmt = $db->prepare($sql);
         
         // pass value to the command
-        $stmt->bindParam('@catAbbrev', $catAbbrev, PDO::PARAM_STR);
+        $stmt->bindParam(':catAbbrev', $catAbbrev, PDO::PARAM_STR);
 
         // execute the stored procedure
         $stmt->execute();
@@ -69,11 +64,7 @@ function getCategoriesByAbbrev($catAbbrev, $db) {
         $stmt->setFetchMode(PDO::FETCH_ASSOC);
         
         while ($row = $stmt->fetch()):
-            $p1 = htmlspecialchars($row['catID']);
-            $p2 = $catAbbrev;
-            $p3 = htmlspecialchars($row['catName']);
-            $c = new WordCategory($p1,$p2,$p3);
-            array_push($cats,$c);
+            array_push($cats,$row);
         endwhile;
         
         $stmt->closeCursor();
@@ -81,19 +72,19 @@ function getCategoriesByAbbrev($catAbbrev, $db) {
     } catch (PDOException $e) {
         die("Error occurred:" . $e->getMessage());
     }
-    return $cats;
+    echo json_encode($cats);
 } 
 function getCategoriesByID($catID, $db) { 
     try {
         $cats = array();
         // calling stored procedure command
-        $sql = 'CALL getCategoriesByID(@catID)';
+        $sql = "CALL getCategoriesByID(:catID)";
     
         // prepare for execution of the stored procedure
         $stmt = $db->prepare($sql);
         
         // pass value to the command
-        $stmt->bindParam('@catID', $catID, PDO::PARAM_STR);
+        $stmt->bindParam(':catID', $catID, PDO::PARAM_INT);
 
         // execute the stored procedure
         $stmt->execute();
@@ -101,11 +92,7 @@ function getCategoriesByID($catID, $db) {
         $stmt->setFetchMode(PDO::FETCH_ASSOC);
         
         while ($row = $stmt->fetch()):
-            $p1 = $catID;
-            $p2 = htmlspecialchars($row['catAbbrev']);
-            $p3 = htmlspecialchars($row['catName']);
-            $c = new WordCategory($p1,$p2,$p3);
-            array_push($cats,$c);
+            array_push($cats,$row);
         endwhile;
         
         $stmt->closeCursor();
@@ -113,13 +100,62 @@ function getCategoriesByID($catID, $db) {
     } catch (PDOException $e) {
         die("Error occurred:" . $e->getMessage());
     }
-    return $cats;
+    echo json_encode($cats);
 } 
 function insertCategory($catName, $catAbbrev, $db) { 
-    print 'Inside `aMemberFunc()`'; 
+    try {
+        $cats = array();
+        // calling stored procedure command
+        $sql = "CALL insertCategory(:catName ,:catAbbrev)";
+    
+        // prepare for execution of the stored procedure
+        $stmt = $db->prepare($sql);
+    
+        // pass value to the command
+        $stmt->bindParam(':catName', $catName);
+        $stmt->bindParam(':catAbbrev', $catAbbrev);
+        
+        //echo var_dump($catName, $catAbbrev, $db);
+        // execute the stored procedure
+        $stmt->execute();
+    
+        $stmt->setFetchMode(PDO::FETCH_ASSOC);
+
+        while ($row = $stmt->fetch()):
+            array_push($cats,$row);
+        endwhile;
+
+        $stmt->closeCursor();
+    
+    } catch (PDOException $e) {
+        die("Error occurred:" . $e->getMessage());
+    }
+    echo json_encode($cats);
 } 
 function updateCategory($catID, $catName, $catAbbrev, $db) { 
-    print 'Inside `aMemberFunc()`'; 
+    try {
+        $cats = array();
+        // calling stored procedure command
+        $sql = "CALL updateCategory(:catID, :catName ,:catAbbrev)";
+    
+        // prepare for execution of the stored procedure
+        $stmt = $db->prepare($sql);
+    
+        // pass value to the command
+        $stmt->bindParam(':catID', $catID, PDO::PARAM_INT);
+        $stmt->bindParam(':catName', $catName);
+        $stmt->bindParam(':catAbbrev', $catAbbrev);
+        
+        //echo var_dump($catName, $catAbbrev, $db);
+        // execute the stored procedure
+        $stmt->execute();
+
+        $stmt->closeCursor();
+    
+    } catch (PDOException $e) {
+        die("Error occurred:" . $e->getMessage());
+    }
 } 
+
 
 ?>
