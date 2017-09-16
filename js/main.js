@@ -9,10 +9,7 @@ var q_list;
 var old_q_list;
 var q_after;
 var panel;
-var btnAddNewTemp = document.getElementById("btnAddNewTemp");
-var btnNewBlank = document.getElementById("btnNewBlank");
-var txtNewTemp0 = document.getElementById("txtNewTemp_0");
-var newQuestionTemplate = document.getElementById("newQuestionTemplate");
+
 var textArea;
 var tinymce;
 var badgeCount = 0;
@@ -22,8 +19,9 @@ var cats = new Categories();
 var topics = [];
 var candidateTopics = [];
 var questions = [];
+//making fake data
 for(var i = 0;i<7;i++){
-    var q={};
+    var q = new Question();
     q['questionID'] = i;
     var r = Math.random();
     if(r>0.6666){
@@ -41,21 +39,6 @@ for(var i = 0;i<7;i++){
         q.words[0].catID = 2;
         q.words[0].catAbbrev = "Pla";
     questions.push(q);
-}
-
-window.onload = function(){
-  //events
-  if(btnNewBlank){btnNewBlank.addEventListener('click', insertBlank);}
-  if(btnAddNewTemp){btnAddNewTemp.addEventListener('click', getString);}
-  
-  //preselect text
-  var selection = window.getSelection();
-  var range = document.createRange();
-  if(txtNewTemp0){
-    range.selectNodeContents(txtNewTemp0);
-    selection.removeAllRanges();
-    selection.addRange(range);
-  }
 }
 
 function periodPressed(event){
@@ -131,25 +114,6 @@ function renderCandidateTopics(){
   }
 }
 
-
-
-function getWords(){
-$.ajax({
-      url: 'models/ajax-follow.php',
-      type: 'post',
-      data: {'action': 'follow', 'userid': '11239528343'},
-      success: function(data, status) {
-        if(data == "ok") {
-          console.log(status);
-        }
-      },
-      error: function(xhr, desc, err) {
-        console.log(xhr);
-        console.log("Details: " + desc + "\nError:" + err);
-      }
-    }); // end ajax call
-}
-
 tinymce.init({
   selector: '#tny',
   height: 600,
@@ -202,43 +166,6 @@ tinymce.init({
   
   
  });
-
-
-
-function insertBlank(){
-  var text = txtNewTemp0.innerHTML;
-  var arrVal = [["Per","Person"], ["Pla","Place"], ["Occ","Occupation"], ["Evt","Event"],["Obj", "Object"], ["Spc","Species"], ["Act","Action"], ["Ida","Idea"], ["Qlt","Quality"], ["GpO","Group-Object"], ["GpP","Group-Person"], ["GpI","Group-Idea"], ["GpE","Group-Event"]];
-  var idCnt = document.querySelectorAll("select").length;
-  var ddl = document.createElement("select");
-  ddl.id = "ddlTempWordCat_"+idCnt;
-  for(var i = 0; i<arrVal.length;i++){
-    var opt = document.createElement("option");
-    opt.value = arrVal[i][0];
-    opt.label = arrVal[i][1];
-    ddl.options.add(opt);
-  }
-  newQuestionTemplate.appendChild(ddl);
-  var span = document.createElement("span");
-  span.id = "txtNewTemp_"+(idCnt+1);
-  span.setAttribute("contenteditable", true);
-  span.appendChild( document.createTextNode("?"));
-  newQuestionTemplate.appendChild(span);
-  newQuestionTemplate.lastElementChild.focus();
-
-}
-
-function getString(){
-  var ddls = document.querySelectorAll("select");
-  var q="";
-  for (var i=0;i<ddls.length+1;i++){
-    var span = document.getElementById("txtNewTemp_"+i);
-    q +=span.innerText;
-    if(i<ddls.length){
-    q +=" #"+ddls[i].selectedOptions[0].value+"# ";
-    }
-  }
-  console.log(q);
-}
 
 function onStart(){
     getElements();
@@ -363,57 +290,7 @@ function updateQuestions(){
 function renderQuestions(){
     for(var i=0;i<questions.length;i++){
         //card
-        var qCard = document.createElement("li");
-        if(questions[i].relevant==null){
-            qCard.classList.add('question_card');
-        }else{
-            qCard.classList.add('old_question_card');
-        }
-        //chk div
-        var chkDiv = document.createElement("div");
-        chkDiv.classList.add('q_div');
-        var chkSpan = document.createElement('span');
-        chkSpan.id = "chk_"+questions[i].questionID;
-        chkSpan.classList.add('clickable');
-        var chkI = document.createElement('i');
-        if(questions[i].relevant===true){
-            chkI.innerHTML = 'check_box';
-        }else{
-            chkI.innerHTML = 'check_box_outline_blank';
-        }
-        chkI.classList.add('material-icons');
-        chkSpan.appendChild(chkI);
-        chkDiv.appendChild(chkSpan);
-        //q div
-        var qDiv = document.createElement("div");
-        qDiv.classList.add('q_div');
-        var qSpan = document.createElement('span');
-        qSpan.id = 'qid_'+questions[i].questionID;
-        qSpan.classList.add('question');
-        qSpan.innerHTML = questions[i].question;
-        qDiv.appendChild(qSpan);
-        
-        // dismiss div
-        var disDiv = document.createElement("div");
-        disDiv.classList.add('q_div');
-        var disSpan = document.createElement('span');
-        var disI = document.createElement('i');
-        if(questions[i].relevant===null){
-            disSpan.id = "dismiss_"+questions[i].questionID;
-            disI.innerHTML = 'not_interested';
-        }else{
-            disSpan.id = "restore_"+questions[i].questionID;
-            disI.innerHTML = 'refresh';
-        }        
-        disSpan.classList.add('clickable');
-        disI.classList.add('material-icons');
-        disSpan.appendChild(disI);
-        disDiv.appendChild(disSpan);
-        
-        //adding everything to list
-        qCard.appendChild(chkDiv);
-        qCard.appendChild(qDiv);
-        qCard.appendChild(disDiv);
+        var qCard = questions[i].createQuestionCard()
         if(questions[i].relevant===null){
             if(q_list==null){ getElements(); console.log(q_list); }
             q_list.appendChild(qCard);

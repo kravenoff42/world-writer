@@ -11,7 +11,7 @@
 }
 
 #btnNewBlank {
-  display: block;
+  display: inline;
   text-align: right;
 }
 
@@ -28,16 +28,16 @@
 #mceu_30-button{
   padding: 2px ;
 }
-.q_head{
-    background-color: #444 !important;
-    padding: 6px !important;
-}
-.q_head h1{
-    color: #fff ;
-    padding: 6px !important;
-    font-size: larger;
-    text-align: center !important;
-}
+/*.q_head{*/
+/*    background-color: #444 !important;*/
+/*    padding: 6px !important;*/
+/*}*/
+/*.q_head h1{*/
+/*    color: #fff ;*/
+/*    padding: 6px !important;*/
+/*    font-size: larger;*/
+/*    text-align: center !important;*/
+/*}*/
 #c_list, #q_list, #old_q_list{
     margin: 0 !important;
 }
@@ -96,9 +96,9 @@
 span[id^='chk'] i{
     width: 24px !important;
 }
-select[id^='ddlWordCat'] select{
-    border: 1px solid #000 !important;
-}
+/*select[id^='ddlWordCat'] select{*/
+/*    border: 1px solid #000 !important;*/
+/*}*/
 span[id^='dismiss']{
     
 }
@@ -144,3 +144,13 @@ span[id^='dismiss']{
     font-size: smaller !important;
 }
 
+#mdlLoadBody{
+    max-height: 350px !important;
+    overflow-y: scroll !important;
+}
+
+.form-group select {
+    display: inline-block !important;
+    width: auto !important;
+    /*vertical-align: middle !important;*/
+}

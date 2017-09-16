@@ -129,20 +129,21 @@ function getTemplatesAll($db) {
         die("Error occurred:" . $e->getMessage());
     }
     echo json_encode($templates);
+    
 } 
-function insertTemplate($catID, $template, $varCnt, $db) { 
+function insertTemplate($catID,  $varCnt, $template, $db) { 
     try {
         $templates = array();
         // calling stored procedure command
-        $sql = "CALL insertTemplate(:catID ,:template,:varCnt)";
+        $sql = "CALL insertTemplate(:catID,:varCnt ,:template)";
     
         // prepare for execution of the stored procedure
         $stmt = $db->prepare($sql);
     
         // pass value to the command
         $stmt->bindParam(':catID', $catID, PDO::PARAM_INT);
-        $stmt->bindParam(':template', $template);
         $stmt->bindParam(':varCnt', $varCnt, PDO::PARAM_INT);
+        $stmt->bindParam(':template', $template, PDO::PARAM_STR);
         
         // execute the stored procedure
         $stmt->execute();
@@ -160,11 +161,11 @@ function insertTemplate($catID, $template, $varCnt, $db) {
     }
     echo json_encode($templates);
 } 
-function updateTemplate($tempID, $catID, $template, $varCnt, $db) { 
+function updateTemplate($tempID, $catID, $varCnt,  $template, $db) { 
     try {
         $templates = array();
         // calling stored procedure command
-        $sql = "CALL updateTemplate(:tempID, :catID ,:template,:varCnt)";
+        $sql = "CALL updateTemplate(:tempID, :catID ,:varCnt,:template)";
     
         // prepare for execution of the stored procedure
         $stmt = $db->prepare($sql);
@@ -172,8 +173,8 @@ function updateTemplate($tempID, $catID, $template, $varCnt, $db) {
         // pass value to the command
         $stmt->bindParam(':tempID', $tempID, PDO::PARAM_INT);
         $stmt->bindParam(':catID', $catID, PDO::PARAM_INT);
-        $stmt->bindParam(':template', $template);
         $stmt->bindParam(':varCnt', $varCnt, PDO::PARAM_INT);
+        $stmt->bindParam(':template', $template, PDO::PARAM_STR);
         
         // execute the stored procedure
         $stmt->execute();

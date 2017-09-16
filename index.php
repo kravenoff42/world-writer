@@ -9,8 +9,9 @@
     <!--<link rel="stylesheet" href="css/questions.css">-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <?php// require(__DIR__.'/models/DB.php'); 
-     include(__DIR__.'/models/DB.php'); 
+    <?php
+    $_SESSION['admin']=true;
+    include(__DIR__.'/models/DB.php'); 
      
     ?>
 
@@ -19,26 +20,18 @@
     <div class="container-fluid">
       <?php
         include (__DIR__ . "/html/user/header.php"); 
-        switch($action){
-          case "newPage":
-            include (__DIR__ . "/html/user/page.php"); 
-            break;
-          case "savePage":
-            include (__DIR__ . "/html/user/page.php"); 
-            include (__DIR__ . "/html/user/page.php"); 
-            break;
-          case "loadPage":
-            include (__DIR__ . "/html/user/page.php"); 
-            include (__DIR__ . "/html/user/page.php"); 
-            break;
+        switch($_GET['action']){
           case "contact":
             include (__DIR__ . "/html/user/contact.php"); 
             break;
           case "newTemp":
-            include (__DIR__ . "/html/admin/page.php"); 
+            include (__DIR__ . "/html/user/templates.php"); 
             break;
+          case "newPage":
           default:
             include (__DIR__ . "/html/user/page.php"); 
+            include (__DIR__ . "/html/user/save.php"); 
+            include (__DIR__ . "/html/user/load.php"); 
             break;
         }
         
@@ -47,18 +40,23 @@
       
       ?>
     </div><!--end container-->
-    <!--<script src="https://cloud.tinymce.com/stable/tinymce.min.js?apiKey=i777wu96ia6kbekuf05skbp9565wrw0ovwgw5oxwzfi2gxlx"></script>-->
+    <!--3rd Party Scripts-->
     <script src="js/jquery.min.js" ></script>
     <script src="js/tinymce/tinymce.min.js"></script>
     <script src="js/tinymce/jquery.tinymce.min.js"></script>
     <script src="js/bootstrap.min.js" ></script>
     <script src="js/rita-full.js" charset="utf-8"></script>
     <!--<script src="js/p5.js" charset="utf-8"></script>-->
-    <script src="js/Convert.js" charset="utf-8"></script>
-    <script src="js/Probability.js" charset="utf-8"></script>
-    <script src="js/Question.js" charset="utf-8"></script>
-    <script src="js/Topic.js" charset="utf-8"></script>
-    <script src="js/Categories.js" charset="utf-8"></script>
+    
+    <!--JS Classes-->
+    <script src="js/Classes/Question.js" charset="utf-8"></script>
+    <script src="js/Classes/Questions.js" charset="utf-8"></script>
+    <script src="js/Classes/Topic.js" charset="utf-8"></script>
+    <script src="js/Classes/Template.js" charset="utf-8"></script>
+    <script src="js/Classes/Categories.js" charset="utf-8"></script>
+    
+    <!--main logic-->
+    <?php if($_GET['action']=="newTemp"){ ?><script src="js/templates.js" charset="utf-8"></script><?php }?>
     <script src="js/main.js" charset="utf-8"></script>
   </body>
 </html>

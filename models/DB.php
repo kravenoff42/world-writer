@@ -65,8 +65,8 @@ switch($table){
         
         if(isset($_POST['tempID'])){$tempID = $_POST['tempID'];}
         if(isset($_POST['catID'])){$catID = $_POST['catID'];}
-        if(isset($_POST['template'])){$template = $_POST['template'];}
         if(isset($_POST['varCnt'])){$varCnt = $_POST['varCnt'];}
+        if(isset($_POST['template'])){$template = $_POST['template'];}
         
         switch($function){
             case 'deleteTemplate':
@@ -85,10 +85,10 @@ switch($table){
                 getTemplatesAll($db);
                 break;
             case 'insertTemplate':
-                insertTemplate($catID, $template, $varCnt, $db);
+                insertTemplate($catID, $varCnt, $template, $db);
                 break;
             case 'updateTemplate':
-                updateTemplate($tempID, $catID, $template, $varCnt, $db);
+                updateTemplate($tempID, $catID, $varCnt, $template, $db);
                 break;
         }
         break;

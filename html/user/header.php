@@ -14,19 +14,23 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
           
-        <li><a href="/home/new">New</a></li>
-        <li><a href="/home/save">Save</a></li>
-        <li><a href="/home/load">Load</a></li>
+        <li><a href="index.php?action=newPage">New</a></li>
+        <li>
+          <a class="clickable" data-toggle="modal" data-target="#mdlSave">Save</a>
+        </li>
+        <li>
+          <a class="clickable" data-toggle="modal" data-target="#mdlLoad">Load</a>
+        </li>
 
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
         <?php 
           if($_SESSION['admin']){?>
-              <li><a href="/admin/newTemp">Admin</a></li>
+              <li><a href="index.php?action=newTemp">Admin</a></li>
       <?php } ?>
                 
-          <li><a href="/contact">Contact</a></li>
+          <li><a href="index.php?action=contact">Contact</a></li>
       </ul>
       
     </div><!-end collapse>
