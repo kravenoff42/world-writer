@@ -23,6 +23,7 @@ try{
     include (__DIR__ . '/QuestionWordsDB.php');
     include (__DIR__ . '/QuestionTemplatesDB.php');
     include (__DIR__ . '/QuestionsDB.php');
+    include (__DIR__ . '/PagesDB.php');
 
 if(isset($_POST['table'])){$table = $_POST['table'];}
 switch($table){
@@ -212,6 +213,37 @@ switch($table){
                     updateCategory($catID, $catName, $catAbbrev, $db);
                     break;
             }
+        break;
+    case "pages":
+        if(isset($_POST['function'])){$function = $_POST['function'];}
+        
+        if(isset($_POST['pageID'])){$pageID = $_POST['pageID'];}
+        if(isset($_POST['pageTitle'])){$pageTitle = $_POST['pageTitle'];}
+        if(isset($_POST['content'])){$content = $_POST['content'];}
+
+        switch($function){
+            case 'deletePage':
+                deletePage($pageID, $db);
+                break;
+            case 'getPagesAll':
+                getPagesAll($db);
+                break;
+            case 'getPagesAllphp':
+                getPagesAllphp($db);
+                break;
+            case 'getPagesByID':
+                getPagesByID($pageID, $db);
+                break;
+            case 'getPagesByIDphp':
+                getPagesByIDphp($pageID, $db);
+                break;
+            case 'insertPage':
+                insertPage($pageTitle, $content, $db);
+                break;
+            case 'updatePage':
+                updatePage($pageID, $pageTitle, $content, $db);
+                break;
+        }
         break;
 }
 

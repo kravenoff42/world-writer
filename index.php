@@ -10,9 +10,15 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <?php
+    if(isset($_SESSION)){
+    session_destroy();
+    
+    }
+    session_start();
     $_SESSION['admin']=true;
     include(__DIR__.'/models/DB.php'); 
-     
+    // unset($_POST);
+    
     ?>
 
   </head>
@@ -28,7 +34,13 @@
             include (__DIR__ . "/html/user/templates.php"); 
             break;
           case "newPage":
+            unset($_POST['loadPageID']);
           default:
+            if(isset($_POST['loadPageID'])){
+              $loaded = true;
+              $p = $_POST['loadPageID'];
+              $currPage = getPagesByIDphp($p, $db);
+            }
             include (__DIR__ . "/html/user/page.php"); 
             include (__DIR__ . "/html/user/save.php"); 
             include (__DIR__ . "/html/user/load.php"); 
@@ -54,9 +66,12 @@
     <script src="js/Classes/Topic.js" charset="utf-8"></script>
     <script src="js/Classes/Template.js" charset="utf-8"></script>
     <script src="js/Classes/Categories.js" charset="utf-8"></script>
+    <script src="js/Classes/Page.js" charset="utf-8"></script>
     
     <!--main logic-->
-    <?php if($_GET['action']=="newTemp"){ ?><script src="js/templates.js" charset="utf-8"></script><?php }?>
+    <?php if($_GET['action']=="newTemp"){ ?><script src="js/templates.js" charset="utf-8"></script><?php } ?>
     <script src="js/main.js" charset="utf-8"></script>
+    <?php if($loaded){ ?> <script> currPage = <?php echo json_encode($currPage); ?> </script><?php } ?>
+
   </body>
 </html>

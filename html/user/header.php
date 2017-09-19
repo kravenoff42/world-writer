@@ -16,10 +16,10 @@
           
         <li><a href="index.php?action=newPage">New</a></li>
         <li>
-          <a class="clickable" data-toggle="modal" data-target="#mdlSave">Save</a>
+          <a class="clickable" data-toggle="modal" data-target="#mdlSave" id="lnkSave">Save</a>
         </li>
         <li>
-          <a class="clickable" data-toggle="modal" data-target="#mdlLoad">Load</a>
+          <a class="clickable" data-toggle="modal" data-target="#mdlLoad"  id="lnkload">Load</a>
         </li>
 
       </ul>

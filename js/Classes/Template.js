@@ -40,7 +40,8 @@ Template.prototype.insertTemplate = function( catID, varCnt, template){
           location.reload();
           }catch(e){
               console.log(e);
-              console.log(xhr.responseText);
+              var footerLog = document.getElementById('log');
+              footerLog.innerHTML = xhr.responseText;
           }
       }
     });

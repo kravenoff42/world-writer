@@ -68,7 +68,8 @@ Questions.prototype.setList = function(){
               }
           }catch(e){
               console.log(e);
-              console.log(xhr.responseText);
+              var footerLog = document.getElementById('log');
+              footerLog.innerHTML = xhr.responseText;
           }
       }
     });

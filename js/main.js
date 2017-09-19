@@ -9,6 +9,14 @@ var q_list;
 var old_q_list;
 var q_after;
 var panel;
+var pageListItems;
+var pageListRadios =[];
+var btnSavePage;
+var currPage;
+var loaded = false;
+var lnkLoad;
+var lnkSave;
+var footerLog; 
 
 var textArea;
 var tinymce;
@@ -39,6 +47,53 @@ for(var i = 0;i<7;i++){
         q.words[0].catID = 2;
         q.words[0].catAbbrev = "Pla";
     questions.push(q);
+}
+
+window.onload = function(){
+  
+  pageListItems = document.querySelectorAll(".pageList");
+  if(pageListItems){
+    for(var i = 0; i<pageListItems.length;i++){
+      pageListItems[i].addEventListener('click', toggleRadio);
+      pageListRadios.push(pageListItems[i].firstElementChild);
+    }
+  }
+  btnSavePage = document.getElementById('btnSavePage');
+  btnSavePage.addEventListener('click', savePage);
+  if(loaded){
+    var temp = currPage;
+    currPage = new Page(temp);
+  }
+  lnkLoad = document.getElementById('lnkLoad');
+  // lnkLoad.addEventListener('click', savePage);
+  lnkSave = document.getElementById('lnkSave');
+  lnkSave.addEventListener('click', updateSaveModal);
+}
+
+function updateSaveModal(){
+  currPage = new Page();
+  currPage.getNewInfo();
+  var lblTitle = document.getElementById('lblPageTitleSave');
+  lblTitle.innerHTML = currPage.pageTitle;
+}
+
+function savePage(event){
+  currPage = new Page();
+  currPage.getNewInfo();
+  if(loaded){
+    // p = new Page(currPage.pageID, currPage.pageTitle, currPage.content);
+    // p.updatePage();
+    
+    currPage.updatePage();
+  }else{
+    // var frame = document.getElementById('tny_ifr');
+    // var body = frame.contentDocument.getElementById('tinymce');
+    // var title = document.getElementById('pTitle').innerHTML;
+    // var content = body.innerHTML;
+    // currPage = new Page();
+    // currPage.getNewInfo();
+    currPage.insertPage();
+  }
 }
 
 function periodPressed(event){
@@ -186,8 +241,7 @@ function getElements(){
     q_list = document.getElementById("q_list");
     old_q_list = document.getElementById("old_q_list");
     q_after = document.querySelectorAll(".q_after");
-    
-}
+  }
 
 function setListeners(){
   //events
@@ -211,7 +265,18 @@ function setListeners(){
         expArr[i].addEventListener('click', toggleVisible);
       }
   }
+  
   viewAll.addEventListener('click', showAllQuestions);
+}
+
+function toggleRadio(event){
+  var label = this;
+  console.log(label);
+  var radio = label.firstElementChild;
+  console.log(radio);
+  radio.checked = true;
+  console.log(radio);
+  
 }
 
 function setRelevance(event){

@@ -1,3 +1,6 @@
+<?php 
+ 
+?>
 <div class="modal" id="mdlSave">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -8,12 +11,17 @@
       </div>
       <div class="modal-body">
         <h6>Are you sure you want to save?</h6>
-        <h8>Title:</h8>
-        <h8>Last Modified:</h8>
+        <p><b>Title: </b><span id="lblPageTitleSave"><?php echo $title; ?></span></p>
+        <p>
+          <b>Last Modified: </b>
+          <?php
+          if(!isset($lastModified)){$lastModified = date("Y-m-d h:i:sa");}
+          echo $lastModified; ?>
+          </p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary"  id="btnSavePage">Save</button>
+        <button type="button" class="btn btn-primary"  id="btnSavePage" data-dismiss="modal">Save</button>
       </div>
       
     </div>
