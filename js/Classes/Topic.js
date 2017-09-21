@@ -1,32 +1,74 @@
 
-function Topic(topTitle,topID){ 
+function Topic(topicFromDB,topTitle,catID,relevant,topID){ 
     //Properties
-    this.topID;
-    if(topID){
-        this.topID= topID;
-    }
-    this.catID; 
-    this.topTitle = topTitle; 
-    this.relevant;
+    this.topID = null;
+    this.catID = null; 
+    this.topTitle = null; 
+    this.relevant = null;
     this.words = [];
-    this.content;
+    if(topicFromDB){
+        if(topicFromDB.topID){
+            this.topID = topicFromDB.topID;
+        }
+        if(topicFromDB.catID){
+            this.catID = topicFromDB.catID; 
+        }
+        if(topicFromDB.topTitle){
+            this.topTitle = topicFromDB.topTitle; 
+        }
+        if(topicFromDB.relevant){
+            this.relevant = topicFromDB.relevant;
+        }
+    }else{
+        if(topID){
+            this.topID = topID;
+        }
+        if(catID){
+            this.catID = catID; 
+        }
+        if(topTitle){
+            this.topTitle = topTitle; 
+        }
+        if(relevant){
+            this.relevant = relevant;
+        }
+    }
+
+    this.words = [];
+    //this.content;
 }
 
 //Methods
-Topic.prototype.isRelevant = function(){ 
-    // print 'Inside `aMemberFunc()`';
-} 
+ 
 Topic.prototype.insertNewTopic = function(){ 
     $.ajax({
-        url: '/models/TopicsDB.php',
-        data: {'function':'insertTopic', 
-        'params':{
-            'catID':this.catID ,
-            'topTitle':this.topTitle,
-            'relevant':this.relevant,
-            'content':this.content
-         }
+        url: '/models/DB.php',
+        type: 'POST',
+        jsonp: 'callback',
+        data: {
+            'table':'wordCategories',
+            'function':'insertCategory', 
+            'topTitle': this.topTitle,
+            'catID': this.catID,
+            'relevant':this.relevant
+        },
+        error: function(data){
+            alert("oh No something when wrong with saving the data");
+            console.log(data);
         }
+    });
+    $( document ).ajaxSuccess(function( event, xhr, settings ) {
+        var d = settings.data;
+      if ( settings.url == "/models/DB.php"  && d.includes("insertCategory")) {
+          try{
+          var results = JSON.parse(xhr.responseText);
+        $( ".log" ).text( "Respnse: CatID = " +
+           results[0]["LAST_INSERT_ID()"]);
+          }catch(e){
+              console.log(e);
+              console.log(xhr.responseText);
+          }
+      }
     });
 } 
 Topic.prototype.getWords = function(){ 

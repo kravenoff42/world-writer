@@ -75,6 +75,36 @@ Word.prototype.getValidTemps = function(){
         }
     });
 }
+Word.prototype.insertWord = function(){
+    $.ajax({
+        url: '/models/DB.php',
+        type: 'POST',
+        jsonp: 'callback',
+        data: {
+            'table':'wordCategories',
+            'function':'insertCategory', 
+            'catName': catName,
+            'catAbbrev': catAbbrev
+        },
+        error: function(data){
+            alert("oh No something when wrong with saving the data");
+            console.log(data);
+        }
+    });
+    $( document ).ajaxSuccess(function( event, xhr, settings ) {
+        var d = settings.data;
+      if ( settings.url == "/models/DB.php"  && d.includes("insertCategory")) {
+          try{
+          var results = JSON.parse(xhr.responseText);
+        $( ".log" ).text( "Respnse: CatID = " +
+           results[0]["LAST_INSERT_ID()"]);
+          }catch(e){
+              console.log(e);
+              console.log(xhr.responseText);
+          }
+      }
+    });
+}
 Word.prototype.createCandidateCard = function(i, catArr){ 
     //card
     var tCard = document.createElement("li");
@@ -132,11 +162,6 @@ Word.prototype.createCandidateCard = function(i, catArr){
     return tCard;
 }
 Word.prototype.updateWord = function(){
-    if(!this.wordID){
-        
-    }
-}
-Word.prototype.makeTopic = function(){
     if(!this.wordID){
         
     }

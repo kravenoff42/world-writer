@@ -52,8 +52,10 @@ Categories.prototype.setList = function(){
       if ( settings.url == "/models/DB.php"  && d.includes("getCategoriesAll")) {
           try{
               var results = JSON.parse(xhr.responseText);
-              var firstObj = {"catAbbrev":"NaN","catName":"Pick Category"}
+              var firstObj = {"catAbbrev":"NaN","catName":"Pick Category"};
+              var secondObj = {"catAbbrev":"Top","catName":"Part of Topic"};
               tempList.push(firstObj);
+              tempList.push(secondObj);
               for(var i = 0;i<results.length;i++){
                    tempList.push(results[i]);
               }

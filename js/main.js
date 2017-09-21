@@ -363,23 +363,22 @@ function setRelevance(event){
 function setTopicRelevance(event){
     var t_elements = this.id.split('_');
     var prefix = t_elements[0];
-    var qid = t_elements[1];
+    var wid = t_elements[1];
+    var cat = document.getElementById('ddlWordCat_'+wid).innerHTML;
+    var word = document.getElementById('wid_'+wid).innerHTML;
+    var newWord = candidateTopics.findWord(word);
+    var rel;
+    if(!newWord){newWord = new Word(null, word)};
     if(prefix == "confirmT"){
-        var id = this.id.split("_")[1];
-        var w = document.getElementById('wid_'+id).innerHTML;
-        //not right yet
-        var newWord = candidateTopics.findWord(w);
-        if(!newWord){
-        if(newWord.topID){
-          newWord.insertWord();
-        }else{
-          var t = newWord.makeTopic();
-          t.insertTopic();
-        }
-        questions.updateList();
+      rel = true;
     }else if(prefix == "dismissT"){
-        upadateQuestionRelevantState(qid,false);
+      rel = false;
     }
+    var t = new Topic(null,newWord,cat,rel);
+    var tid = t.insertTopic();
+    newWord.insertWord();
+    
+    
     var div = this.parentElement;
     var card = div.parentElement;
     card.classList.add("relevanceSet");
