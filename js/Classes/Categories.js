@@ -52,7 +52,7 @@ Categories.prototype.setList = function(){
       if ( settings.url == "/models/DB.php"  && d.includes("getCategoriesAll")) {
           try{
               var results = JSON.parse(xhr.responseText);
-              var firstObj = {"catAbbrev":"NaN","catName":"Choose Category"}
+              var firstObj = {"catAbbrev":"NaN","catName":"Pick Category"}
               tempList.push(firstObj);
               for(var i = 0;i<results.length;i++){
                    tempList.push(results[i]);
@@ -127,10 +127,18 @@ Categories.prototype.getCategoriesAll = function(){
       }
 });
 }
-/*
-var c = new Categories();
-c.insertCategory("Idea", "Ida");
-
-var c = new Categories();
-c.getCategoriesAll();
-*/
+Categories.prototype.createDDL = function(wordID){
+    var ddl = document.createElement("select");
+    ddl.classList.add('form-control');
+    ddl.classList.add('wordCatSelect');
+    ddl.id = "ddlWordCat_"+wordID;
+    // console.log(this.list.length);
+    for(var i = 0; i<this.list.length;i++){
+        var opt = document.createElement("option");
+        // console.log(this.list[i]);
+        opt.value = this.list[i].catAbbrev;
+        opt.label = this.list[i].catName;
+        ddl.options.add(opt);
+    }
+    return ddl;
+}

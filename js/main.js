@@ -5,6 +5,8 @@ var restoreArr;
 var expArr;
 var viewAll;
 var c_list;
+var c_listDDLs;
+var c_listChecks;
 var q_list;
 var old_q_list;
 var q_after;
@@ -16,41 +18,47 @@ var currPage;
 var loaded = false;
 var lnkLoad;
 var lnkSave;
-var footerLog; 
+var footerLog;
+var panelRendered;
+
 
 var textArea;
 var tinymce;
 var badgeCount = 0;
-var cats = new Categories();
+var cats;
 
 //Placeholder data
 var topics = [];
-var candidateTopics = [];
+var candidateTopics;
 var questions = [];
 //making fake data
-for(var i = 0;i<7;i++){
-    var q = new Question();
-    q['questionID'] = i;
-    var r = Math.random();
-    if(r>0.6666){
-        q['relevant'] = true;
-    }else if(r<0.3333){
-        q['relevant'] = false;
-    }else{
-        q['relevant'] = null;
-    }
-    q['question'] = "Who lives in <a href='#'>Narnia</a>?";
-    q['words'] = [{}];
-        q.words[0].word = "<a href='#'>Narnia</a>";
-        q.words[0].wordID = 1;
-        q.words[0].pageID = 3;
-        q.words[0].catID = 2;
-        q.words[0].catAbbrev = "Pla";
-    questions.push(q);
-}
+// for(var i = 0;i<7;i++){
+//     var q = new Question();
+//     q['questionID'] = i;
+//     var r = Math.random();
+//     if(r>0.6666){
+//         q['relevant'] = true;
+//     }else if(r<0.3333){
+//         q['relevant'] = false;
+//     }else{
+//         q['relevant'] = null;
+//     }
+//     q['question'] = "Who lives in <a href='#'>Narnia</a>?";
+//     q['words'] = [{}];
+//         q.words[0].word = "<a href='#'>Narnia</a>";
+//         q.words[0].wordID = 1;
+//         q.words[0].pageID = 3;
+//         q.words[0].catID = 2;
+//         q.words[0].catAbbrev = "Pla";
+//     questions.push(q);
+// }
 
 window.onload = function(){
+  cats = new Categories();
+  cats.setList();
+  questions = new QuestionList();
   
+  panelRendered = false;
   pageListItems = document.querySelectorAll(".pageList");
   if(pageListItems){
     for(var i = 0; i<pageListItems.length;i++){
@@ -59,15 +67,29 @@ window.onload = function(){
     }
   }
   btnSavePage = document.getElementById('btnSavePage');
+  if(btnSavePage){
   btnSavePage.addEventListener('click', savePage);
+  }
   if(loaded){
     var temp = currPage;
     currPage = new Page(temp);
+    candidateTopics = new TopicsList(currPage.pageID);
+    candidateTopics.setList();
+    console.log('list set')
   }
+  
   lnkLoad = document.getElementById('lnkLoad');
-  // lnkLoad.addEventListener('click', savePage);
+  if(lnkLoad){
+  lnkLoad.addEventListener('click', updatePageList);
+  }
   lnkSave = document.getElementById('lnkSave');
+  if(lnkSave){
   lnkSave.addEventListener('click', updateSaveModal);
+  }
+}
+
+function updatePageList(){
+  
 }
 
 function updateSaveModal(){
@@ -81,17 +103,8 @@ function savePage(event){
   currPage = new Page();
   currPage.getNewInfo();
   if(loaded){
-    // p = new Page(currPage.pageID, currPage.pageTitle, currPage.content);
-    // p.updatePage();
-    
     currPage.updatePage();
   }else{
-    // var frame = document.getElementById('tny_ifr');
-    // var body = frame.contentDocument.getElementById('tinymce');
-    // var title = document.getElementById('pTitle').innerHTML;
-    // var content = body.innerHTML;
-    // currPage = new Page();
-    // currPage.getNewInfo();
     currPage.insertPage();
   }
 }
@@ -104,10 +117,20 @@ function periodPressed(event){
 }
 
 function contentChanged(event){
+  clearQuestions();
+  renderPanel();
   analyzeText(event);
   renderCandidateTopics();
+  updateQuestionBadge();
+  getElements();
+  setListeners();
 }
-
+function uniq(a) {
+    var seen = {};
+    return a.filter(function(item) {
+        return seen.hasOwnProperty(item) ? false : (seen[item] = true);
+    });
+}
 function analyzeText(event){
   var frame = document.getElementById('tny_ifr');
   var body = frame.contentDocument.getElementById('tinymce');
@@ -116,15 +139,17 @@ function analyzeText(event){
   var pos = r.pos();
   var words = r.words();
       console.log("NEW CHECK");
-  candidateTopics = [];
+  var wList = [];
   for(var i = 0; i <words.length;i++){
     if(pos[i]=="nnps" || pos[i]=="nnp"){
-      var topicID = candidateTopics.length+1;
-      candidateTopics.push(new Topic(words[i],topicID));
-      console.log(words[i]);
-      // console.log(pos[i]);
+      wList.push(words[i]);
     }
   }
+  var newList = uniq(wList);
+    console.log(newList);
+
+  candidateTopics.updateList(newList);
+  console.log(candidateTopics.list);
 }
 
 function insertQuestionBadge(){
@@ -144,28 +169,32 @@ function updateQuestionBadge(){
 
 function defineWord(){
   var frame = document.getElementById('tny_ifr');
-  console.log("set topic")
+  // console.log("set topic")
     var text = "";
     if (window.getSelection) {
         text = frame.contentDocument.getSelection().toString();
-        console.log(text);
+        // console.log(text);
     } else if (document.selection && document.selection.type != "Control") {
         text = document.selection.createRange().text;
-        console.log(text);
+        // console.log(text);
     }
-    console.log(text);
-    topics.push(text);
+    // console.log(text);
+    candidateTopics.addWord(text);
     
 }
 
 function renderCandidateTopics(){
-  for(var i=0;i<candidateTopics.length;i++){
-    
-    var tCard = candidateTopics[i].createCandidateCard(i,cats);
-    if(c_list==null){ setContainers(); getElements(); console.log(c_list);  }
-    window.c_list.appendChild(tCard);
-    console.log(c_list);
-    badgeCount++;
+  getElements();
+  if(candidateTopics.list.length>0){
+    candidateTopics.renderTopicCards();
+    // for(var i=0;i<4;i++){
+    //   var r = Math.floor(Math.random()*(candidateTopics.list.length-1));
+    //   var tCard = candidateTopics.list[r].createCandidateCard(i,cats);
+    //   if(c_list==null){ setContainers(); getElements(); console.log(c_list);  }
+    //   window.c_list.appendChild(tCard);
+    //   //console.log(c_list);
+    //   badgeCount++;
+    // }
   }
 }
 
@@ -190,43 +219,48 @@ tinymce.init({
   ],
   
   setup: function (editor) {
-    
     editor.on('change', contentChanged),
     editor.on('keyup', periodPressed),
     editor.addSidebar('mysidebar', {
       tooltip: 'My sidebar',
       icon: 'mylist',
       onrender: function (api) {
-        console.log('Render panel', api.element());
+        // console.log('Render panel', api.element());
         setContainers();
         onStart();
         insertQuestionBadge()
       },
       onshow: function (api) {
-        console.log('Show panel', api.element());
-        updateQuestionBadge()
+        // console.log('Show panel', api.element());
+        // updateQuestionBadge()
       },
       onhide: function (api) {
-        updateQuestionBadge()
-        console.log('Hide panel', api.element());
+        // updateQuestionBadge()
+        // console.log('Hide panel', api.element());
       }
     });
+    // editor.on('change', renderPanel),
     
   editor.addButton('newTopic', {
     text: "Set Topic",
     onclick: defineWord
   });
-  
   }
-  
-  
  });
 
-function onStart(){
+function renderPanel(){
     getElements();
+  if(!panelRendered){
+    var btn = document.getElementById('mceu_29-button');
+    btn.click();
+    btn.click();
+  }
+}
+
+function onStart(){
+    renderPanel();
     renderQuestions();
     renderCandidateTopics();
-    getElements();
     setListeners();
 }
 
@@ -241,10 +275,12 @@ function getElements(){
     q_list = document.getElementById("q_list");
     old_q_list = document.getElementById("old_q_list");
     q_after = document.querySelectorAll(".q_after");
+    c_listDDLs = document.querySelectorAll(".wordCatSelect");
   }
 
 function setListeners(){
-  //events
+      getElements();
+//events
   if(chkArr){
       for(var i = 0; i<chkArr.length;i++){
         chkArr[i].addEventListener('click', setRelevance);
@@ -265,21 +301,49 @@ function setListeners(){
         expArr[i].addEventListener('click', toggleVisible);
       }
   }
+  if(c_listDDLs){
+      for(var i = 0; i<c_listDDLs.length;i++){
+        c_listDDLs[i].addEventListener('change', toggleCatConfirm);
+      }
+  }
+  if(c_listChecks){
+      for(var i = 0; i<c_listChecks.length;i++){
+        c_listChecks[i].addEventListener('click', confirmWord);
+      }
+  }
   
   viewAll.addEventListener('click', showAllQuestions);
 }
 
 function toggleRadio(event){
   var label = this;
-  console.log(label);
+  // console.log(label);
   var radio = label.firstElementChild;
-  console.log(radio);
+  // console.log(radio);
   radio.checked = true;
-  console.log(radio);
+  // console.log(radio);
   
 }
 
+function confirmWord(event){
+  var id = this.id.split("_")[1];
+  var w = document.getElementById('wid_'+id).innerHTML;
+  var newWord = candidateTopics.findWord(w);
+  
+}
+
+function toggleCatConfirm(event){
+  var id = this.id.split("_")[1];
+  var confirm = document.getElementById('confirmT_'+id);
+  if(this.selectedOptions[0].value!="NaN"){
+    confirm.classList.remove('hidden');
+  }else{
+    confirm.classList.add('hidden');
+  }
+}
+
 function setRelevance(event){
+  //TODO move upadateQuestionRelevantState to Question Class
     var q_elements = this.id.split('_');
     var prefix = q_elements[0];
     var qid = q_elements[1];
@@ -289,6 +353,32 @@ function setRelevance(event){
         upadateQuestionRelevantState(qid,false);
     }else if(prefix == "chk"){
         upadateQuestionRelevantState(qid,true);
+    }
+    var div = this.parentElement;
+    var card = div.parentElement;
+    card.classList.add("relevanceSet");
+    updateQuestionBadge()
+}
+
+function setTopicRelevance(event){
+    var t_elements = this.id.split('_');
+    var prefix = t_elements[0];
+    var qid = t_elements[1];
+    if(prefix == "confirmT"){
+        var id = this.id.split("_")[1];
+        var w = document.getElementById('wid_'+id).innerHTML;
+        //not right yet
+        var newWord = candidateTopics.findWord(w);
+        if(!newWord){
+        if(newWord.topID){
+          newWord.insertWord();
+        }else{
+          var t = newWord.makeTopic();
+          t.insertTopic();
+        }
+        questions.updateList();
+    }else if(prefix == "dismissT"){
+        upadateQuestionRelevantState(qid,false);
     }
     var div = this.parentElement;
     var card = div.parentElement;
@@ -353,6 +443,7 @@ function updateQuestions(){
 }
 
 function renderQuestions(){
+    getElements();
     for(var i=0;i<questions.length;i++){
         //card
         var qCard = questions[i].createQuestionCard()
@@ -370,10 +461,18 @@ function renderQuestions(){
 }
 
 function clearQuestions(){
+  if(c_list){
     c_list.innerHTML="";
+  }
+  if(q_list){
     q_list.innerHTML="";
+  }
+  if(old_q_list){
     old_q_list.innerHTML="";
+  }
+  if(badgeCount!=0){
     badgeCount = 0;
+  }
 }
 
 function setContainers(){

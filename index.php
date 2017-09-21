@@ -62,16 +62,19 @@
     
     <!--JS Classes-->
     <script src="js/Classes/Question.js" charset="utf-8"></script>
-    <script src="js/Classes/Questions.js" charset="utf-8"></script>
+    <script src="js/Classes/QuestionList.js" charset="utf-8"></script>
     <script src="js/Classes/Topic.js" charset="utf-8"></script>
+    <script src="js/Classes/Word.js" charset="utf-8"></script>
+    <script src="js/Classes/TopicsList.js" charset="utf-8"></script>
     <script src="js/Classes/Template.js" charset="utf-8"></script>
+    <script src="js/Classes/TempList.js" charset="utf-8"></script>
     <script src="js/Classes/Categories.js" charset="utf-8"></script>
     <script src="js/Classes/Page.js" charset="utf-8"></script>
     
     <!--main logic-->
-    <?php if($_GET['action']=="newTemp"){ ?><script src="js/templates.js" charset="utf-8"></script><?php } ?>
     <script src="js/main.js" charset="utf-8"></script>
-    <?php if($loaded){ ?> <script> currPage = <?php echo json_encode($currPage); ?> </script><?php } ?>
+    <?php if($_GET['action']=="newTemp"){ ?><script src="js/templates.js" charset="utf-8"></script><?php } ?>
+    <?php if($loaded){ ?> <script> currPage = <?php echo json_encode($currPage) ?> ; loaded = true;  </script><?php } ?>
 
   </body>
 </html>

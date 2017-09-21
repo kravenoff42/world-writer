@@ -1,9 +1,8 @@
-function Questions(){
+function QuestionList(){
     this.list;
-    
 }
 
-Questions.prototype.getQuestionsAll = function(){
+QuestionList.prototype.getQuestionsAll = function(){
     $.ajax({
         url: '/models/DB.php',
         type: 'POST',
@@ -11,14 +10,8 @@ Questions.prototype.getQuestionsAll = function(){
         jsonp: 'callback',
         data: {
             'table':'questions',
-            'function':'getQuestionsAll', 
+            'function':'getQuestionsAll' 
             },
-         success: function(data){
-            //access the members
-            console.log('success');
-            
-
-         },
          error: function(data){
             alert("oh No something when wrong with saving the data");
             console.log(data)
@@ -32,10 +25,10 @@ Questions.prototype.getQuestionsAll = function(){
            results[i]);
           }
       }
-});
+    });
 }
 
-Questions.prototype.setList = function(){
+QuestionList.prototype.setList = function(){
     var tempList = [];
     $.ajax({
         url: '/models/DB.php',
@@ -44,7 +37,7 @@ Questions.prototype.setList = function(){
         jsonp: 'callback',
         data: {
             'table':'questions',
-            'function':'getQuestionsAll', 
+            'function':'getQuestionsAll' 
             },
          success: function(data){
             //access the members
@@ -63,8 +56,8 @@ Questions.prototype.setList = function(){
     
               for(var i = 0;i<results.length;i++){
                   console.log(results[i])
-                //   var question = new Question(results[i]);
-                //   tempList.push(question);
+                  var question = new Question(results[i]);
+                  tempList.push(question);
               }
           }catch(e){
               console.log(e);
@@ -73,5 +66,5 @@ Questions.prototype.setList = function(){
           }
       }
     });
-    // this.list = tempList;
+    this.list = tempList;
 }

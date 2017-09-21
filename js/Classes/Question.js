@@ -1,39 +1,86 @@
-function Question(q) { 
+function Question(questionFromDB,question,tempID,relevant,questionID) { 
     //Properties
-    
-    // if(q.questionID){
-    //     this.questionID = q.questionID; 
-    // }else{
-    //     this.questionID;
-    // }
-    // if(q.tempID){
-    //     this.tempID = q.tempID; 
-    // }else{
-    //     this.tempID; 
-    // }
-    // if(q.relevant){
-    //     this.relevant = q.relevant; 
-    // }else{
-    //     this.relevant; 
-    // }
+    this.questionID = null;
+    this.tempID = null;
+    this.relevant = null;
     this.words = []; 
-    this.pages = []; 
-    this.question;
-    
-    
-    
+    this.question = null;
+    if(questionFromDB){
+        if(questionFromDB.questionID){
+            this.questionID = questionFromDB.questionID; 
+        }
+        if(questionFromDB.tempID){
+            this.tempID = questionFromDB.tempID; 
+        }
+        if(questionFromDB.relevant){
+            this.relevant = questionFromDB.relevant; 
+        }
+    }else{
+        if(questionID){
+            this.questionID = questionID; 
+        }
+        if(tempID){
+            this.tempID = tempID; 
+        }
+        if(relevant){
+            this.relevant = relevant; 
+        }
+    }
+}
 
-} 
+
  //Methods
 Question.prototype.isRelevant = function() { 
-    // print 'Inside `aMemberFunc()`'; 
+    if(this.revelant){
+        return true;
+    }else{
+        return false;
+    }
 } 
 Question.prototype.getWords = function() { 
-    // print 'Inside `aMemberFunc()`'; 
+    if(!(this.questionID)) { return false;}
+    $.ajax({
+        url: '/models/DB.php',
+        type: 'POST',
+        datatype: 'jsonp',
+        jsonp: 'callback',
+        data: {
+            'table':'questionWords',
+            'function':'getWordByQuestion', 
+            'questionID':this.questionID
+            },
+         error: function(data){
+            alert("oh No something when wrong with saving the data");
+            console.log(data)
+         }
+    });
+    $( document ).ajaxSuccess(function( event, xhr, settings ) {
+        if ( settings.url == "/models/DB.php"  && d.includes("getWordByQuestion") ) {
+        var results = JSON.parse(xhr.responseText);
+            for(var i = 0;i<results.length;i++){
+                var word = new Word(results[i]);
+                this.words = [];
+                this.words.push(word);
+            }
+        }
+    });
 } 
-Question.prototype.getQuestion = function() { 
-    // print 'Inside `aMemberFunc()`'; 
+Question.prototype.buildQuestion = function(templates) {
+    if(!(this.questionID)) { return false;}
+    var tString
+    for(var i = 0; i < templates.length;i++){
+        if(this.tempID==templates[i].tempID){
+            tString = templates[i].template;
+        }
+    }
+    qArray = tString.split("0");
+    var wordCnt=0;
+    for(var j = 1;j<qArray.length;j+=2){
+        qArray[j] = this.words[wordCnt].wordStr;
+    }
+    this.question = qArray.join("");
 }
+
 Question.prototype.newQuestion = function(/*newWord, */) { 
 /*
 if(wordFound){
@@ -61,9 +108,7 @@ function findCat(wordStr){
     or
     Ask user (maybe Alert?)
 }
-function getTemplatesByCat(catID){
-    sql query
-}
+
 function getRemainingCats(strTemplate){
     var catIDs = [];
     var cats = sliceAbbrevs(strTemplate);
@@ -79,8 +124,8 @@ function buildTemp(strTemplate, arrWords)
 function sliceAbbrevs()
 function getCategoryByAbbrev(){
     
-}
-*/
+}*/
+
 
 Question.prototype.createQuestionCard = function() { 
     var qCard = document.createElement("li");

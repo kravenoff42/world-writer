@@ -1,11 +1,18 @@
-var btnAddNewTemp = document.getElementById("btnAddNewTemp");
-var btnNewBlank = document.getElementById("btnNewBlank");
-var txtNewTemp0 = document.getElementById("txtNewTemp_0");
-var newQuestionTemplate = document.getElementById("newQuestionTemplate");
+var btnAddNewTemp;
+var btnNewBlank;
+var txtNewTemp0;
+var newQuestionTemplate;
 var cats;
-var templates = [];
+var templates;
+var templatesView;
 
 window.onload = function(){
+  btnAddNewTemp = document.getElementById("btnAddNewTemp");
+  btnNewBlank = document.getElementById("btnNewBlank");
+  txtNewTemp0 = document.getElementById("txtNewTemp_0");
+  newQuestionTemplate = document.getElementById("newQuestionTemplate");
+  templatesView = document.getElementById('templatesView');
+
   //events
   if(btnNewBlank){btnNewBlank.addEventListener('click', insertBlank);}
   if(btnAddNewTemp){btnAddNewTemp.addEventListener('click', getTemplateInfo);}
@@ -20,23 +27,14 @@ window.onload = function(){
   }
   cats = new Categories();
   cats.setList();
-  makeList()
+  templates = new TempList();
+  templates.setList();
 }
 
 function insertBlank(){
   var text = txtNewTemp0.innerHTML;
   var idCnt = document.querySelectorAll("select").length;
-  var ddl = document.createElement("select");
-  ddl.classList.add('form-control');
-  ddl.id = "ddlTempWordCat_"+idCnt;
-  console.log(cats.list.length);
-  for(var i = 0; i<cats.list.length;i++){
-    var opt = document.createElement("option");
-    console.log(cats.list[i]);
-    opt.value = cats.list[i].catAbbrev;
-    opt.label = cats.list[i].catName;
-    ddl.options.add(opt);
-  }
+  var ddl = cats.createDDL(idCnt);
   newQuestionTemplate.insertBefore(ddl, btnNewBlank);
   var span = document.createElement("span");
   span.id = "txtNewTemp_"+(idCnt+1);
@@ -53,7 +51,7 @@ function insertBlank(){
 function getTemplateInfo(){
   var ddls = document.querySelectorAll("select");
   var q="";
-  var qid = cats.toID(ddls[0].selectedOptions[0].value);
+  var cid = cats.toID(ddls[0].selectedOptions[0].value);
   var cnt = ddls.length;
   for (var i=0;i<ddls.length+1;i++){
     var span = document.getElementById("txtNewTemp_"+i);
@@ -62,48 +60,18 @@ function getTemplateInfo(){
     q +="0"+ddls[i].selectedOptions[0].value+"0";
     }
   }
-  // var minusQM = q.length;
-  // q = q.substr(0,minusQM);
-  var t = new Template(qid,cnt,q);
-  
+  var minusQM = q.length-1;
+  q = q.substr(0,minusQM);
+  var t = new Template(null,cid,cnt,q);
+  t.insertTemplate();
 }
 
 function makeList(){
-    var tempList = [];
-    $.ajax({
-        url: '/models/DB.php',
-        type: 'POST',
-        datatype: 'jsonp',
-        jsonp: 'callback',
-        data: {
-            'table':'questionTemplates',
-            'function':'getTemplatesAll', 
-            },
-        error: function(data){
-            alert("oh No something when wrong with saving the data");
-            console.log(data);
-        }
-    });
-    $( document ).ajaxSuccess(function( event, xhr, settings ) {
-        var d = settings.data;
-      if ( settings.url == "/models/DB.php" && d.includes("getTemplatesAll")) {
-        try{
-          var templatesView = document.getElementById('templatesView')
-          var results = JSON.parse(xhr.responseText);
-          if(results.length>0){
-            for(var i = 0;i<results.length;i++){
-                var t = new Template(results[i].catID,results[i].varCnt,results[i].template,results[i].tempID);
-                tempList.push(t);
-                var div = t.createListGroupItem();
-                templatesView.appendChild(t.createListGroupItem());
-            }
-          }
-        }catch(e){
-          console.log(e);
-          console.log(xhr);
-        }
-      }
-    });
-    templates = tempList;
+  //if(templates.list.length>0){
+    for(var i = 0;i<templates.list.length;i++){
+      var div = templates.list[i].createListGroupItem();
+      templatesView.appendChild(div);
+    }
+  //}
 }
 

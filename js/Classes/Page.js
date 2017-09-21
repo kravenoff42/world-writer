@@ -70,6 +70,7 @@ Page.prototype.getPagesAll = function(){
 
 Page.prototype.insertPage = function(){
     if(!(this.pageTitle && this.content)) { return false;}
+    var pid = 0;
     var tempList = [];
     $.ajax({
         url: '/models/DB.php',
@@ -93,6 +94,7 @@ Page.prototype.insertPage = function(){
           try{
               var results = JSON.parse(xhr.responseText);
               for(var i = 0;i<results.length;i++){
+                  pid = results[0]['LAST_INSERT_ID()'];
                    tempList.push(results[i]);
               }
               
@@ -103,6 +105,7 @@ Page.prototype.insertPage = function(){
           }
       }
     });
+    this.pageID = pid;
     console.log(tempList);
 }
 
