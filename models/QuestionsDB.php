@@ -74,6 +74,34 @@ function getQuestionsByID($questionID, $db) {
     }
     echo json_encode($questions);
 } 
+function getQuestionsByPage($pageID, $db) {
+    try {
+        $questions = array();
+        // calling stored procedure command
+        $sql = "CALL getQuestionsByPage(:pageID)";
+    
+        // prepare for execution of the stored procedure
+        $stmt = $db->prepare($sql);
+    
+        // pass value to the command
+        $stmt->bindParam(':pageID', $pageID, PDO::PARAM_INT);
+    
+        // execute the stored procedure
+        $stmt->execute();
+    
+        $stmt->setFetchMode(PDO::FETCH_ASSOC);
+
+        while ($row = $stmt->fetch()):
+            array_push($questions,$row);
+        endwhile;
+
+        $stmt->closeCursor();
+    
+    } catch (PDOException $e) {
+        die("Error occurred:" . $e->getMessage());
+    }
+    echo json_encode($questions);
+} 
 function getQuestionsByTemplate($tempID, $db) { 
     try {
         $questions = array();

@@ -74,6 +74,34 @@ function getTopicsByID($topID, $db) {
     }
     echo json_encode($topics);
 } 
+function getTopicsByPage($pageID, $db) {
+    try {
+        $topics = array();
+        // calling stored procedure command
+        $sql = "CALL getTopicsByPage(:pageID)";
+    
+        // prepare for execution of the stored procedure
+        $stmt = $db->prepare($sql);
+    
+        // pass value to the command
+        $stmt->bindParam(':pageID', $pageID, PDO::PARAM_INT);
+    
+        // execute the stored procedure
+        $stmt->execute();
+    
+        $stmt->setFetchMode(PDO::FETCH_ASSOC);
+
+        while ($row = $stmt->fetch()):
+            array_push($topics,$row);
+        endwhile;
+
+        $stmt->closeCursor();
+    
+    } catch (PDOException $e) {
+        die("Error occurred:" . $e->getMessage());
+    }
+    echo json_encode($topics);
+} 
 function getTopicsByCategory($catID, $db) { 
     try {
         $topics = array();
@@ -127,11 +155,11 @@ function getRelevantTopics($db) {
     }
     echo json_encode($topics);
 } 
-function insertTopic($catID, $topTitle, $relevant, $db) { 
+function insertTopic($catID, $topTitle, $relevant, $pageID, $db) { 
     try {
         $topics = array();
         // calling stored procedure command
-        $sql = "CALL insertTopic(:catID ,:topTitle,:relevant)";
+        $sql = "CALL insertTopic(:catID ,:topTitle,:relevant,:pageID)";
     
         // prepare for execution of the stored procedure
         $stmt = $db->prepare($sql);
@@ -140,6 +168,7 @@ function insertTopic($catID, $topTitle, $relevant, $db) {
         $stmt->bindParam(':catID', $catID, PDO::PARAM_INT);
         $stmt->bindParam(':topTitle', $topTitle);
         $stmt->bindParam(':relevant', $relevant, PDO::PARAM_INT);
+        $stmt->bindParam(':pageID', $pageID, PDO::PARAM_INT);
         
         //echo var_dump($catName, $catAbbrev, $db);
         // execute the stored procedure
@@ -158,11 +187,11 @@ function insertTopic($catID, $topTitle, $relevant, $db) {
     }
     echo json_encode($topics);
 } 
-function updateTopic($topID,$catID, $topTitle, $relevant, $db) { 
+function updateTopic($topID,$catID, $topTitle, $relevant, $pageID, $db) { 
     try {
         $topics = array();
         // calling stored procedure command
-        $sql = "CALL updateTopic(:topID, :catID ,:topTitle,:relevant)";
+        $sql = "CALL updateTopic(:topID, :catID ,:topTitle,:relevant,:pageID)";
     
         // prepare for execution of the stored procedure
         $stmt = $db->prepare($sql);
@@ -172,6 +201,7 @@ function updateTopic($topID,$catID, $topTitle, $relevant, $db) {
         $stmt->bindParam(':catID', $catID, PDO::PARAM_INT);
         $stmt->bindParam(':topTitle', $topTitle);
         $stmt->bindParam(':relevant', $relevant, PDO::PARAM_INT);
+        $stmt->bindParam(':pageID', $pageID, PDO::PARAM_INT);
         
         //echo var_dump($catName, $catAbbrev, $db);
         // execute the stored procedure

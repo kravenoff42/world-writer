@@ -1,11 +1,10 @@
-function Word(wordFromDB,wordStr,topID,plural,wordID,topTitle,relevant){
+function Word(wordFromDB,index,wordStr,topID,plural,wordID){
+    //Properties
+    this.index = null;
     this.wordID = null;
     this.wordStr = null;
     this.topID = null;
-    this.topTitle = null;
     this.plural = false;
-    this.relevant = null;
-    this.validTemps = [];
     if(wordFromDB){
         if(wordFromDB.wordID){
             this.wordID = wordFromDB.wordID;
@@ -16,16 +15,13 @@ function Word(wordFromDB,wordStr,topID,plural,wordID,topTitle,relevant){
         if(wordFromDB.topID){
             this.topID = wordFromDB.topID;
         }
-        if(wordFromDB.topTitle){
-            this.topTitle = wordFromDB.topTitle;
-        }
         if(wordFromDB.plural){
             this.plural = wordFromDB.plural;
         }
-        if(wordFromDB.relevant){
-            this.relevant = wordFromDB.relevant;
-        }
     }else{
+        if(index){
+            this.index = index;
+        }
         if(wordID){
             this.wordID = wordID;
         }
@@ -35,77 +31,48 @@ function Word(wordFromDB,wordStr,topID,plural,wordID,topTitle,relevant){
         if(topID){
             this.topID = topID;
         }
-        if(topTitle){
-            this.topTitle = topTitle;
-        }
         if(plural){
             this.plural = plural;
-        }
-        if(relevant){
-            this.relevant = relevant;
         }
     }
 }
 
-Word.prototype.getValidTemps = function(){
-    if(!this.topID) { return false;}
-    $.ajax({
-        url: '/models/DB.php',
-        type: 'POST',
-        datatype: 'jsonp',
-        jsonp: 'callback',
-        data: {
-            'table':'templates',
-            'function':'getTemplateByTopic', 
-            'topID':this.topID
-            },
-         error: function(data){
-            alert("oh No something when wrong with saving the data");
-            console.log(data)
-         }
-    });
-    $( document ).ajaxSuccess(function( event, xhr, settings ) {
-        if ( settings.url == "/models/DB.php"  && d.includes("getTemplateByTopic") ) {
-        var results = JSON.parse(xhr.responseText);
-            for(var i = 0;i<results.length;i++){
-                var temp = new Template(results[i]);
-                this.validTemps = [];
-                this.validTemps.push(temp);
-            }
-        }
-    });
-}
 Word.prototype.insertWord = function(){
-    $.ajax({
+    if(!(this.topID && this.wordStr)) { return false;}
+    window.$.ajax({
         url: '/models/DB.php',
         type: 'POST',
         jsonp: 'callback',
         data: {
-            'table':'wordCategories',
-            'function':'insertCategory', 
-            'catName': catName,
-            'catAbbrev': catAbbrev
+            'table':'topicWords',
+            'function':'insertWord', 
+            'wordStr': this.wordStr,
+            'topID': this.topID,
+            'plural': this.plural
         },
         error: function(data){
             alert("oh No something when wrong with saving the data");
             console.log(data);
         }
     });
-    $( document ).ajaxSuccess(function( event, xhr, settings ) {
+    window.$( document ).ajaxSuccess(function( event, xhr, settings ) {
         var d = settings.data;
-      if ( settings.url == "/models/DB.php"  && d.includes("insertCategory")) {
+      if ( settings.url == "/models/DB.php"  && d.includes("insertWord")) {
           try{
-          var results = JSON.parse(xhr.responseText);
-        $( ".log" ).text( "Respnse: CatID = " +
+            var results = JSON.parse(xhr.responseText);
+            var id = results[0]['LAST_INSERT_ID()'];
+            this.wordID = id;
+        window.$( ".log" ).text( "Respnse: wordID = " +
            results[0]["LAST_INSERT_ID()"]);
+           
           }catch(e){
               console.log(e);
               console.log(xhr.responseText);
           }
       }
     });
-}
-Word.prototype.createCandidateCard = function(i, catArr){ 
+};
+Word.prototype.createCandidateCard = function(i){ 
     //card
     var tCard = document.createElement("li");
     tCard.classList.add('topic_card');
@@ -124,7 +91,7 @@ Word.prototype.createCandidateCard = function(i, catArr){
     //select div
     var ddlDiv = document.createElement("div");
     ddlDiv.classList.add('q_div');
-    var ddl = catArr.createDDL(i);
+    var ddl = window.cats.createDDL(i);
     ddlDiv.appendChild(ddl);
     
     // confirm div
@@ -136,6 +103,7 @@ Word.prototype.createCandidateCard = function(i, catArr){
     conI.innerHTML = 'done';
     conSpan.classList.add('clickable');
     conSpan.classList.add('hidden');
+    conSpan.classList.add('tCardBtn');
     // conSpan.setAttribute('disabled', 'true');
     conI.classList.add('material-icons');
     conSpan.appendChild(conI);
@@ -149,6 +117,7 @@ Word.prototype.createCandidateCard = function(i, catArr){
     disSpan.id = "dismissT_"+i;
     disI.innerHTML = 'not_interested';
     disSpan.classList.add('clickable');
+    conSpan.classList.add('tCardBtn');
     disI.classList.add('material-icons');
     disSpan.appendChild(disI);
     disDiv.appendChild(disSpan);
@@ -160,10 +129,10 @@ Word.prototype.createCandidateCard = function(i, catArr){
     tCard.appendChild(disDiv);
     
     return tCard;
-}
+};
 Word.prototype.updateWord = function(){
     if(!this.wordID){
         
     }
-}
+};
 

@@ -33,6 +33,7 @@ switch($table){
         if(isset($_POST['questionID'])){$questionID = $_POST['questionID'];}
         if(isset($_POST['tempID'])){$tempID = $_POST['tempID'];}
         if(isset($_POST['relevant'])){$relevant = $_POST['relevant'];}
+        if(isset($_POST['pageID'])){$pageID = $_POST['pageID'];}
         
         switch($function){
             case 'deleteQuestion':
@@ -46,6 +47,9 @@ switch($table){
                 break;
             case 'getQuestionsByTemplate':
                 getQuestionsByTemplate($tempID, $db);
+                break;
+            case 'getQuestionsByPage':
+                getQuestionsByPage($pageID, $db);
                 break;
             case 'getRelevantQuestions':
                 getRelevantQuestions($db);
@@ -129,6 +133,7 @@ switch($table){
         if(isset($_POST['function'])){$function = $_POST['function'];}
         
         if(isset($_POST['topID'])){$topID = $_POST['topID'];}
+        if(isset($_POST['pageID'])){$pageID = $_POST['pageID'];}
         if(isset($_POST['catID'])){$catID = $_POST['catID'];}
         if(isset($_POST['topTitle'])){$topTitle = $_POST['topTitle'];}
         if(isset($_POST['relevant'])){$relevant = $_POST['relevant'];}
@@ -149,11 +154,14 @@ switch($table){
             case 'getRelevantTopics':
                 getRelevantTopics($db);
                 break;
+            case 'getTopicsByPage':
+                getTopicsByPage($pageID, $db);
+                break;
             case 'insertTopic':
-                insertTopic($catID, $topTitle, $relevant, $db);
+                insertTopic($catID, $topTitle, $relevant, $pageID, $db);
                 break;
             case 'updateTopic':
-                updateTopic($topID,$catID, $topTitle, $relevant, $db);
+                updateTopic($topID, $catID, $topTitle, $relevant, $pageID, $db);
                 break;
             case 'updateTopicRelevantState':
                 updateTopicRelevantState($topID, $relevant, $db);

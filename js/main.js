@@ -6,7 +6,7 @@ var expArr;
 var viewAll;
 var c_list;
 var c_listDDLs;
-var c_listChecks;
+var c_listBtns;
 var q_list;
 var old_q_list;
 var q_after;
@@ -20,43 +20,24 @@ var lnkLoad;
 var lnkSave;
 var footerLog;
 var panelRendered;
+var templatesView;
 
-
-var textArea;
 var tinymce;
 var badgeCount = 0;
 var cats;
-
-//Placeholder data
-var topics = [];
-var candidateTopics;
-var questions = [];
-//making fake data
-// for(var i = 0;i<7;i++){
-//     var q = new Question();
-//     q['questionID'] = i;
-//     var r = Math.random();
-//     if(r>0.6666){
-//         q['relevant'] = true;
-//     }else if(r<0.3333){
-//         q['relevant'] = false;
-//     }else{
-//         q['relevant'] = null;
-//     }
-//     q['question'] = "Who lives in <a href='#'>Narnia</a>?";
-//     q['words'] = [{}];
-//         q.words[0].word = "<a href='#'>Narnia</a>";
-//         q.words[0].wordID = 1;
-//         q.words[0].pageID = 3;
-//         q.words[0].catID = 2;
-//         q.words[0].catAbbrev = "Pla";
-//     questions.push(q);
-// }
+var topics;
+var words;
+var questions;
+var templates;
 
 window.onload = function(){
-  cats = new Categories();
+  //caching data
+  cats = new window.Categories();
   cats.setList();
-  questions = new QuestionList();
+  templates = new window.TempList();
+  templates.setList();
+  words = new window.WordList();
+  words.setList();
   
   panelRendered = false;
   pageListItems = document.querySelectorAll(".pageList");
@@ -70,14 +51,17 @@ window.onload = function(){
   if(btnSavePage){
   btnSavePage.addEventListener('click', savePage);
   }
-  if(loaded){
+  if(currPage){
     var temp = currPage;
-    currPage = new Page(temp);
-    candidateTopics = new TopicsList(currPage.pageID);
-    candidateTopics.setList();
-    console.log('list set')
+    currPage = new window.Page(temp);
+  }else{
+    currPage = new window.Page();
   }
-  
+  topics = new window.TopicsList(currPage.pageID);
+  topics.setList();
+  questions = new window.QuestionList();
+  questions.setList();
+
   lnkLoad = document.getElementById('lnkLoad');
   if(lnkLoad){
   lnkLoad.addEventListener('click', updatePageList);
@@ -86,33 +70,33 @@ window.onload = function(){
   if(lnkSave){
   lnkSave.addEventListener('click', updateSaveModal);
   }
-}
+};
 
 function updatePageList(){
   
 }
 
 function updateSaveModal(){
-  currPage = new Page();
+  currPage = new window.Page();
   currPage.getNewInfo();
   var lblTitle = document.getElementById('lblPageTitleSave');
   lblTitle.innerHTML = currPage.pageTitle;
 }
 
 function savePage(event){
-  currPage = new Page();
+  currPage = new window.Page();
   currPage.getNewInfo();
   if(loaded){
     currPage.updatePage();
   }else{
     currPage.insertPage();
+    topics.insertNewTopics();
   }
 }
 
 function periodPressed(event){
   if(event.keyCode == 190){
     analyzeText(event);
-    renderCandidateTopics();
   }
 }
 
@@ -120,8 +104,6 @@ function contentChanged(event){
   clearQuestions();
   renderPanel();
   analyzeText(event);
-  renderCandidateTopics();
-  updateQuestionBadge();
   getElements();
   setListeners();
 }
@@ -135,7 +117,7 @@ function analyzeText(event){
   var frame = document.getElementById('tny_ifr');
   var body = frame.contentDocument.getElementById('tinymce');
   var text = body.innerText;
-  var r = new RiString(text);
+  var r = new window.RiString(text);
   var pos = r.pos();
   var words = r.words();
       console.log("NEW CHECK");
@@ -146,10 +128,10 @@ function analyzeText(event){
     }
   }
   var newList = uniq(wList);
-    console.log(newList);
-
-  candidateTopics.updateList(newList);
-  console.log(candidateTopics.list);
+  //topics.setList();
+  topics.updateList(newList);
+  updateTopicsList();
+  updateBadgeCount();
 }
 
 function insertQuestionBadge(){
@@ -162,8 +144,10 @@ function insertQuestionBadge(){
   i.appendChild(badge);
 }
 
-function updateQuestionBadge(){
+function updateBadgeCount(){
   var badge = document.getElementById('question_badge');
+  var qCon = document.getElementById('q_container');
+  badgeCount = qCon.querySelectorAll("li").length;
   badge.innerHTML = badgeCount;
 }
 
@@ -179,24 +163,21 @@ function defineWord(){
         // console.log(text);
     }
     // console.log(text);
-    candidateTopics.addWord(text);
-    
+    var newList =[text];
+    topics.updateList(newList);
+    updateTopicsList();
+    updateBadgeCount();
 }
 
-function renderCandidateTopics(){
-  getElements();
-  if(candidateTopics.list.length>0){
-    candidateTopics.renderTopicCards();
-    // for(var i=0;i<4;i++){
-    //   var r = Math.floor(Math.random()*(candidateTopics.list.length-1));
-    //   var tCard = candidateTopics.list[r].createCandidateCard(i,cats);
-    //   if(c_list==null){ setContainers(); getElements(); console.log(c_list);  }
-    //   window.c_list.appendChild(tCard);
-    //   //console.log(c_list);
-    //   badgeCount++;
-    // }
-  }
-}
+// function renderCandidateTopics(){
+//   getElements();
+//   if(topics){
+//     var candidates = topics.getCandidates();
+//     if(candidates.length>0){
+//       topics.renderTopicCards();
+//     }
+//   }
+// }
 
 tinymce.init({
   selector: '#tny',
@@ -225,22 +206,18 @@ tinymce.init({
       tooltip: 'My sidebar',
       icon: 'mylist',
       onrender: function (api) {
-        // console.log('Render panel', api.element());
         setContainers();
         onStart();
-        insertQuestionBadge()
-      },
-      onshow: function (api) {
-        // console.log('Show panel', api.element());
-        // updateQuestionBadge()
-      },
-      onhide: function (api) {
-        // updateQuestionBadge()
-        // console.log('Hide panel', api.element());
-      }
+        insertQuestionBadge();
+      }//,
+      // onshow: function (api) {
+      //   updateBadgeCount();
+      // },
+      // onhide: function (api) {
+      //   updateBadgeCount();
+      // }
     });
-    // editor.on('change', renderPanel),
-    
+
   editor.addButton('newTopic', {
     text: "Set Topic",
     onclick: defineWord
@@ -259,8 +236,8 @@ function renderPanel(){
 
 function onStart(){
     renderPanel();
-    renderQuestions();
-    renderCandidateTopics();
+    updateQuestionsList();
+    updateTopicsList();
     setListeners();
 }
 
@@ -276,6 +253,7 @@ function getElements(){
     old_q_list = document.getElementById("old_q_list");
     q_after = document.querySelectorAll(".q_after");
     c_listDDLs = document.querySelectorAll(".wordCatSelect");
+    c_listBtns = document.querySelectorAll(".tCardBtn");
   }
 
 function setListeners(){
@@ -306,9 +284,9 @@ function setListeners(){
         c_listDDLs[i].addEventListener('change', toggleCatConfirm);
       }
   }
-  if(c_listChecks){
-      for(var i = 0; i<c_listChecks.length;i++){
-        c_listChecks[i].addEventListener('click', confirmWord);
+  if(c_listBtns){
+      for(var i = 0; i<c_listBtns.length;i++){
+        c_listBtns[i].addEventListener('click', setTopicRelevance);
       }
   }
   
@@ -322,13 +300,6 @@ function toggleRadio(event){
   // console.log(radio);
   radio.checked = true;
   // console.log(radio);
-  
-}
-
-function confirmWord(event){
-  var id = this.id.split("_")[1];
-  var w = document.getElementById('wid_'+id).innerHTML;
-  var newWord = candidateTopics.findWord(w);
   
 }
 
@@ -357,32 +328,59 @@ function setRelevance(event){
     var div = this.parentElement;
     var card = div.parentElement;
     card.classList.add("relevanceSet");
-    updateQuestionBadge()
+    updateBadgeCount();
 }
 
 function setTopicRelevance(event){
     var t_elements = this.id.split('_');
     var prefix = t_elements[0];
     var wid = t_elements[1];
-    var cat = document.getElementById('ddlWordCat_'+wid).innerHTML;
+    console.log(wid);
+    var ddl = document.getElementById('ddlWordCat_'+wid);
+    var selected = ddl.selectedOptions[0].value;
+    console.log(selected);
+    var cat = null;
+    if(selected!="Top"){
+      cat = cats.toID(selected);
+    }
     var word = document.getElementById('wid_'+wid).innerHTML;
-    var newWord = candidateTopics.findWord(word);
+    
+    var newTopic = topics.findTopic(word);
     var rel;
-    if(!newWord){newWord = new Word(null, word)};
+    var newWord;
+    if(!newTopic){return;}
+    
     if(prefix == "confirmT"){
+      if(selected=="Top"){
+        newWord = new window.Word(null,null,newTopic.topTitle);
+        topics.removeTopic(newTopic);
+        toggleTopicSelect(newWord);
+        return;
+      }
       rel = true;
     }else if(prefix == "dismissT"){
       rel = false;
     }
-    var t = new Topic(null,newWord,cat,rel);
-    var tid = t.insertTopic();
-    newWord.insertWord();
+    topics.list[wid].catID = cat;
+    topics.list[wid].relevant = rel;
+    topics.list[wid].insertTopic();
+    // newWord.insertWord();
+    updateTopicsList();
     
-    
-    var div = this.parentElement;
-    var card = div.parentElement;
-    card.classList.add("relevanceSet");
-    updateQuestionBadge()
+    //card.classList.add("relevanceSet");
+    updateBadgeCount();
+}
+
+function toggleTopicSelect(){
+  
+}
+
+function updateTopicsList(word){
+  if(c_list==null){ setContainers(); getElements(); console.log(c_list);  }
+  window.c_list.innerHTML = "";
+  if(!word){word=false;}
+  topics.renderTopicCards(word);
+  setListeners();
 }
 
 function toggleVisible(event){
@@ -435,17 +433,17 @@ function upadateQuestionRelevantState(questionID, relevant){
 
 function updateQuestions(){
     clearQuestions();
-    renderCandidateTopics()
-    renderQuestions();
+    updateTopicsList();
+    updateQuestionsList();
     getElements();
     setListeners();
 }
 
-function renderQuestions(){
+function updateQuestionsList(){
     getElements();
     for(var i=0;i<questions.length;i++){
         //card
-        var qCard = questions[i].createQuestionCard()
+        var qCard = questions[i].createQuestionCard();
         if(questions[i].relevant===null){
             if(q_list==null){ getElements(); console.log(q_list); }
             q_list.appendChild(qCard);

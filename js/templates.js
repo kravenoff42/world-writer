@@ -25,14 +25,13 @@ window.onload = function(){
     selection.removeAllRanges();
     selection.addRange(range);
   }
-  cats = new Categories();
+  cats = new window.Categories();
   cats.setList();
-  templates = new TempList();
+  templates = new window.TempList();
   templates.setList();
-}
+};
 
 function insertBlank(){
-  var text = txtNewTemp0.innerHTML;
   var idCnt = document.querySelectorAll("select").length;
   var ddl = cats.createDDL(idCnt);
   newQuestionTemplate.insertBefore(ddl, btnNewBlank);
@@ -45,7 +44,6 @@ function insertBlank(){
   newQuestionTemplate.insertBefore(span, btnNewBlank);
   var last = newQuestionTemplate.lastElementChild;
   last.previousElementSibling.focus();
-
 }
 
 function getTemplateInfo(){
@@ -66,12 +64,12 @@ function getTemplateInfo(){
   t.insertTemplate();
 }
 
-function makeList(){
-  //if(templates.list.length>0){
-    for(var i = 0;i<templates.list.length;i++){
-      var div = templates.list[i].createListGroupItem();
-      templatesView.appendChild(div);
-    }
-  //}
-}
+// function makeList(){
+//   //if(templates.list.length>0){
+//     for(var i = 0;i<templates.list.length;i++){
+//       var div = templates.list[i].createListGroupItem();
+//       templatesView.appendChild(div);
+//     }
+//   //}
+// }
 

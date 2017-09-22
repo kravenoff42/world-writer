@@ -1,18 +1,15 @@
-<div class="modal" id="mdlLoad">
+<div class="modal" id="mdlTopics">
   <div class="modal-dialog">
     <div class="modal-content">
       
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title">Load Page</h4>
+        <h4 class="modal-title">Select a Topic</h4>
       </div>
       <form action="index.php" method="post">
-      <div class="modal-body" id="mdlLoadBody">
-         <div class="list-group">
-           <?php 
-            $pages = getPagesAllphp($db);
-            $count = count($pages);
-            for($i=0;$i<$count;$i++){ ?>
+      <div class="modal-body" >
+         <div class="list-group" id="mdlTopicsGroup">
+           
             <label class="pageList">
               <input type="radio" name="loadPageID" value="<?php echo $pages[$i]['pageID']; ?>" style="visibility: hidden; position: absolute;" >
               <a href ="#" class="list-group-item" >
@@ -21,7 +18,7 @@
                 <p class="list-group-item-text"><?php echo "Last Modifeied: ".$pages[$i]['lastModified']; ?></p>
               </a>
             </label>
-          <?php }?>
+          
           
         </div>
       </div>
@@ -33,5 +30,3 @@
     </div>
   </div>
 </div>
-
- 

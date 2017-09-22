@@ -1,42 +1,48 @@
 function Page(pageFromDB, pageTitle,content,lastModified,dateCreated,pageID){
+    //properties
+    this.pageID = null;
+    this.pageTitle = null;
+    this.content = null;
+    this.lastModified = null;
+    this.dateCreated = null;
     if(pageFromDB){
-        this.pageID = pageFromDB.pageID;
-        this.pageTitle = pageFromDB.pageTitle;
-        this.content = pageFromDB.content;
-        this.lastModified = pageFromDB.lastModified;
-        this.dateCreated = pageFromDB.dateCreated;
+        if (pageID){
+            this.pageID = pageFromDB.pageID;
+        }
+        if (pageTitle){
+            this.pageTitle = pageFromDB.pageTitle;
+        }
+        if (content){
+            this.content = pageFromDB.content;
+        }
+        if (lastModified){
+            this.lastModified = pageFromDB.lastModified;
+        }
+        if (dateCreated){
+            this.dateCreated = pageFromDB.dateCreated;
+        }
     }else{
         if (pageID){
             this.pageID = pageID;
-        }else{
-            this.pageID = null;
         }
         if (pageTitle){
             this.pageTitle = pageTitle;
-        }else{
-            this.pageTitle = null;
         }
         if (content){
             this.content = content;
-        }else{
-            this.content = null;
         }
         if (lastModified){
             this.lastModified = lastModified;
-        }else{
-            this.lastModified = null;
         }
         if (dateCreated){
             this.dateCreated = dateCreated;
-        }else{
-            this.dateCreated = null;
         }
     }
 }
 
 Page.prototype.getPagesAll = function(){
     var tempList = [];
-    $.ajax({
+    window.$.ajax({
         url: '/models/DB.php',
         type: 'POST',
         datatype: 'jsonp',
@@ -47,10 +53,10 @@ Page.prototype.getPagesAll = function(){
             },
          error: function(data){
             alert("oh No something when wrong with saving the data");
-            console.log(data)
+            console.log(data);
          }
     });
-    $( document ).ajaxSuccess(function( event, xhr, settings ) {
+    window.$( document ).ajaxSuccess(function( event, xhr, settings ) {
         var d = settings.data;
       if ( settings.url == "/models/DB.php"  && d.includes("getPagesAll")) {
           try{
@@ -66,13 +72,13 @@ Page.prototype.getPagesAll = function(){
       }
     });
     return tempList;
-}
+};
 
 Page.prototype.insertPage = function(){
     if(!(this.pageTitle && this.content)) { return false;}
     var pid = 0;
     var tempList = [];
-    $.ajax({
+    window.$.ajax({
         url: '/models/DB.php',
         type: 'POST',
         datatype: 'jsonp',
@@ -85,19 +91,20 @@ Page.prototype.insertPage = function(){
             },
          error: function(data){
             alert("oh No something when wrong with saving the data");
-            console.log('insertPage',data)
+            console.log('insertPage',data);
          }
     });
-    $( document ).ajaxSuccess(function( event, xhr, settings ) {
+    window.$( document ).ajaxSuccess(function( event, xhr, settings ) {
         var d = settings.data;
       if ( settings.url == "/models/DB.php"  && d.includes("insertPage")) {
           try{
-              var results = JSON.parse(xhr.responseText);
-              for(var i = 0;i<results.length;i++){
-                  pid = results[0]['LAST_INSERT_ID()'];
-                   tempList.push(results[i]);
-              }
-              
+            var results = JSON.parse(xhr.responseText);
+            for(var i = 0;i<results.length;i++){
+                pid = results[0]['LAST_INSERT_ID()'];
+                tempList.push(results[i]);
+            }
+            this.pageID = pid;
+            window.topics.insertNewTopics(pid);
           }catch(e){
               console.log(e);
               var footerLog = document.getElementById('log');
@@ -105,14 +112,12 @@ Page.prototype.insertPage = function(){
           }
       }
     });
-    this.pageID = pid;
-    console.log(tempList);
-}
+};
 
 Page.prototype.updatePage = function(){
     if(!(this.pageID && this.pageTitle && this.content)) { return false;}
     var tempList = [];
-    $.ajax({
+    window.$.ajax({
         url: '/models/DB.php',
         type: 'POST',
         datatype: 'jsonp',
@@ -126,10 +131,10 @@ Page.prototype.updatePage = function(){
             },
          error: function(data){
             alert("oh No something when wrong with saving the data");
-            console.log(data)
+            console.log(data);
          }
     });
-    $( document ).ajaxSuccess(function( event, xhr, settings ) {
+    window.$( document ).ajaxSuccess(function( event, xhr, settings ) {
         var d = settings.data;
       if ( settings.url == "/models/DB.php"  && d.includes("updatePage")) {
           try{
@@ -145,15 +150,13 @@ Page.prototype.updatePage = function(){
       }
     });
     console.log(tempList) ;
-}
+};
 
 Page.prototype.getNewInfo = function(){
-    var lblTitle = document.getElementById('lblPageTitleSave');
-    
     var frame = document.getElementById('tny_ifr');
     var body = frame.contentDocument.getElementById('tinymce');
     var title = document.getElementById('pTitle').innerHTML;
     var content = body.innerHTML;
     this.pageTitle = title;
     this.content = content;
-}
+};

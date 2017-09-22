@@ -1,14 +1,19 @@
-
-function Topic(topicFromDB,topTitle,catID,relevant,topID){ 
+function Topic(topicFromDB,index,topTitle,pageID,catID,relevant,topID){ 
     //Properties
+    this.index = index;
     this.topID = null;
     this.catID = null; 
+    this.pageID = null; 
     this.topTitle = null; 
     this.relevant = null;
     this.words = [];
+    this.validTemps = [];
     if(topicFromDB){
         if(topicFromDB.topID){
             this.topID = topicFromDB.topID;
+        }
+        if(topicFromDB.pageID){
+            this.pageID = topicFromDB.pageID; 
         }
         if(topicFromDB.catID){
             this.catID = topicFromDB.catID; 
@@ -23,115 +28,209 @@ function Topic(topicFromDB,topTitle,catID,relevant,topID){
         if(topID){
             this.topID = topID;
         }
+        if(pageID){
+            this.pageID = pageID; 
+        }
         if(catID){
             this.catID = catID; 
         }
         if(topTitle){
-            this.topTitle = topTitle; 
+            this.topTitle = topTitle;
+            var i = this.words.length;
+            this.words.push( new window.Word(null,i,topTitle));
         }
         if(relevant){
             this.relevant = relevant;
         }
     }
-
-    this.words = [];
-    //this.content;
 }
 
 //Methods
  
-Topic.prototype.insertNewTopic = function(){ 
-    $.ajax({
+Topic.prototype.insertTopic = function(){
+    var tempList = [];
+    var index = this.index;
+    if(!(this.topTitle && this.catID && this.relevant && this.pageID)) { return false;}
+    window.$.ajax({
         url: '/models/DB.php',
         type: 'POST',
         jsonp: 'callback',
         data: {
-            'table':'wordCategories',
-            'function':'insertCategory', 
+            'table':'topics',
+            'function':'insertTopic', 
             'topTitle': this.topTitle,
             'catID': this.catID,
-            'relevant':this.relevant
+            'relevant':this.relevant,
+            'pageID':this.pageID
         },
         error: function(data){
             alert("oh No something when wrong with saving the data");
             console.log(data);
         }
     });
-    $( document ).ajaxSuccess(function( event, xhr, settings ) {
+    window.$( document ).ajaxSuccess(function( event, xhr, settings ) {
         var d = settings.data;
-      if ( settings.url == "/models/DB.php"  && d.includes("insertCategory")) {
+      if ( settings.url == "/models/DB.php"  && d.includes("insertTopic")) {
           try{
-          var results = JSON.parse(xhr.responseText);
-        $( ".log" ).text( "Respnse: CatID = " +
-           results[0]["LAST_INSERT_ID()"]);
+            var results = JSON.parse(xhr.responseText);
+            var id = results[0]['LAST_INSERT_ID()'];
+            window.topics.list[index].topID = id;
+            var i = window.topics.list[index].words.length;
+            var newWord = new window.Word(null,i,this.topTitle,id);
+            tempList.push(newWord);
+            // newWord.insertWord();
+            window.words.list.push(newWord);
+            
           }catch(e){
               console.log(e);
               console.log(xhr.responseText);
           }
       }
     });
-} 
+    this.words = tempList;
+};
+Topic.prototype.getValidTemps = function(){
+    if(!(this.catID && window.templates)) { return false;}
+    var len = window.templates.list.length;
+    var tempArr =[];
+    for(var i = 0; i <len;i++){
+        if(window.templates.list[i].catID == this.catID){
+            tempArr.push(window.templates.list[i]);
+        }
+    }
+    this.validTemps = tempArr;
+    // $.ajax({
+    //     url: '/models/DB.php',
+    //     type: 'POST',
+    //     datatype: 'jsonp',
+    //     jsonp: 'callback',
+    //     data: {
+    //         'table':'templates',
+    //         'function':'getTemplateByCategory', 
+    //         'catID':this.catID
+    //         },
+    //      error: function(data){
+    //         alert("oh No something when wrong with saving the data");
+    //         console.log(data)
+    //      }
+    // });
+    // $( document ).ajaxSuccess(function( event, xhr, settings ) {
+    //     if ( settings.url == "/models/DB.php"  && d.includes("getTemplateByCategory") ) {
+    //     var results = JSON.parse(xhr.responseText);
+    //         for(var i = 0;i<results.length;i++){
+    //             var temp = new Template(results[i]);
+    //             this.validTemps = [];
+    //             this.validTemps.push(temp);
+    //         }
+    //     }
+    // });
+};
 Topic.prototype.getWords = function(){ 
-    // print 'Inside `aMemberFunc()`'; 
-} 
-Topic.prototype.getTitle = function(){ 
-    // print 'Inside `aMemberFunc()`'; 
-} 
-Topic.prototype.getCategory = function(){ 
-    // print 'Inside `aMemberFunc()`'; 
-} 
-Topic.prototype.changeTitle = function(){ 
-    // print 'Inside `aMemberFunc()`'; 
-} 
-Topic.prototype.setContent = function(content){ 
-    this.content = content;
-}
-Topic.prototype.saveContent = function(){ 
+    if(!(this.topID && window.words)) { return false;}
+    var len = window.words.list.length;
+    var tempList = [];
+    for(var i = 0; i <len;i++){
+        if(window.words.list[i].topID == this.topID){
+            tempList.push(window.words.list[i]);
+        }
+    }
+    this.words = tempList; 
+    // $.ajax({
+    //     url: '/models/DB.php',
+    //     type: 'POST',
+    //     datatype: 'jsonp',
+    //     jsonp: 'callback',
+    //     data: {
+    //         'table':'topicWords',
+    //         'function':'getWordsByTopic',
+    //         'pageID': this.topID
+    //         },
+    //      error: function(data){
+    //         alert("oh No something when wrong with saving the data");
+    //         console.log(data)
+    //      }
+    // });
+    // $( document ).ajaxSuccess(function( event, xhr, settings ) {
+    //     var d = settings.data;
+    //     if ( settings.url == "/models/DB.php"  && d.includes("getWordsByTopic")) {
+    //       try{
+    //           var results = JSON.parse(xhr.responseText);
     
-} 
-Topic.prototype.changeTitle = function(){ 
-    // print 'Inside `aMemberFunc()`'; 
-} 
-
-// Topic.prototype.createCandidateCard = function(i, cats){ 
-//     //card
-//     var tCard = document.createElement("li");
+    //           for(var i = 0;i<results.length;i++){
+    //             //   console.log(results[i])
+    //               var word = new Word(results[i]);
+    //               tempList.push(word);
+    //           }
+    //       }catch(e){
+    //           console.log(e);
+    //          // console.log(xhr.responseText);
+    //         //   var footerLog = document.getElementById('log');
+    //         //   footerLog.innerHTML = xhr.responseText;
+    //       }
+    //     }
+    // });
+    // this.words = tempList; 
+} ;
+Topic.prototype.findWord = function(word){ 
+    for(var i=0, len = this.words.length;i<len;i++){
+        if(this.words[i].wordStr==word){
+            
+            var found = this.words.splice(i,1);
+            console.log(found);
+            var newArray =[found];
+            newArray.concat(this.words);
+            console.log(this.words);
+            this.words = newArray;
+            console.log(this.words);
+            return true;
+        }
+    }
+    return false;
+};
+Topic.prototype.changeTitle = function(wordStr){ 
+    var wordFound = this.findWord(wordStr);
+    // if(wordFound){
+        this.topTitle = wordFound.wordStr;
+    // }
+} ;
+// Topic.prototype.makeWord = function(){
+//     return this.topTitle;
+// };
+Topic.prototype.generateTopicItem = function(){
+    //Label
+    var tLabel = document.createElement('label');
+    tLabel.classList.add('pageList');
     
-//     tCard.classList.add('topic_card');
-
-//     //t div
-//     var qDiv = document.createElement("div");
-//     qDiv.classList.add('q_div');
-//     var qSpan = document.createElement('span');
-//     qSpan.id = 'tid_'+i;
-//     qSpan.classList.add('topic');
-//     qSpan.innerHTML = this.topTitle;
-//     qDiv.appendChild(qSpan);
+    //radio button
+    var tRadio = document.createElement('input');
+    tRadio.id = "radio_"+this.topTitle;
+    tRadio.classList.add('radios');
+    tRadio.setAttribute('type','radio');
+    tRadio.setAttribute('name','selectTopicID');
+    tRadio.value = this.topTitle;
     
-//     //select div
-//     var ddlDiv = document.createElement("div");
-//     ddlDiv.classList.add('q_div');
-//     var ddl = cats.createDDL(i);
-//     ddlDiv.appendChild(ddl);
+    //list group Item
+    var tItem = document.createElement('a');
+    tItem.setAttribute('href','#');
+    tItem.classList.add('list-group-item');
     
-//     // dismiss div
-//     var disDiv = document.createElement("div");
-//     disDiv.classList.add('q_div');
-//     var disSpan = document.createElement('span');
-//     var disI = document.createElement('i');
-//     disSpan.id = "dismissT_"+i;
-//     disI.innerHTML = 'not_interested';
-//     disSpan.classList.add('clickable');
-//     disI.classList.add('material-icons');
-//     disSpan.appendChild(disI);
-//     disDiv.appendChild(disSpan);
+    //item Heading
+    var tHead = document.createElement('h4');
+    tHead.classList.add('list-group-item-heading');
+    tHead.innerHTML = "Topic: "+ this.topTitle;
+    tItem.appendChild(tHead);
     
-//     //adding everything to list
-//     tCard.appendChild(qDiv);
-//     tCard.appendChild(ddlDiv);
-//     tCard.appendChild(disDiv);
+    //item text
+    var tText = document.createElement('p');
+    tText.classList.add('list-group-item-text');
+    tText.innerHTML = "Topic: "+ this.topTitle;
+    tItem.appendChild(tText);
     
-//     return tCard;
-// }
-  
+    //append elements
+    
+    tLabel.appendChild(tRadio);
+    tLabel.appendChild(tItem);
+    
+    return tLabel;
+}  ;
 

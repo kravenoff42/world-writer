@@ -27,9 +27,6 @@
       <?php
         include (__DIR__ . "/html/user/header.php"); 
         switch($_GET['action']){
-          case "contact":
-            include (__DIR__ . "/html/user/contact.php"); 
-            break;
           case "newTemp":
             include (__DIR__ . "/html/user/templates.php"); 
             break;
@@ -44,6 +41,7 @@
             include (__DIR__ . "/html/user/page.php"); 
             include (__DIR__ . "/html/user/save.php"); 
             include (__DIR__ . "/html/user/load.php"); 
+            include (__DIR__ . "/html/user/topics.php"); 
             break;
         }
         
@@ -65,6 +63,7 @@
     <script src="js/Classes/QuestionList.js" charset="utf-8"></script>
     <script src="js/Classes/Topic.js" charset="utf-8"></script>
     <script src="js/Classes/Word.js" charset="utf-8"></script>
+    <script src="js/Classes/WordList.js" charset="utf-8"></script>
     <script src="js/Classes/TopicsList.js" charset="utf-8"></script>
     <script src="js/Classes/Template.js" charset="utf-8"></script>
     <script src="js/Classes/TempList.js" charset="utf-8"></script>

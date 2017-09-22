@@ -165,11 +165,11 @@ span[id^='dismiss']{
 
 .dropIn{
     /*position: absolute !important;*/
-    top: -100px ;
+    top: -200px ;
     opacity: 0;
-    -webkit-animation: slide 0.5s forwards;
+    -webkit-animation: slide 0.9s forwards;
     -webkit-animation-delay: 0.1s ;
-    animation: slide 0.5s forwards ;
+    animation: slide 0.9s forwards ;
     animation-delay: 0.1s ;
 }
 
@@ -184,4 +184,8 @@ span[id^='dismiss']{
 #templatesView{
     max-height: 75vh ;
     overflow-y: scroll;
+}
+.radios{
+    visibility: hidden !important; 
+    position: absolute !important;
 }

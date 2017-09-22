@@ -2,7 +2,8 @@ function Template(tempFromDB,catID,varCnt,template,tempID){
     this.tempID = null;
     this.catID = null; 
     this.varCnt = null;
-    this.template = null; 
+    this.template = null;
+    this.additionalCats = [];
     if(tempFromDB){
         if(tempFromDB.tempID){
             this.tempID = tempFromDB.tempID; 
@@ -32,7 +33,7 @@ function Template(tempFromDB,catID,varCnt,template,tempID){
 Template.prototype.insertTemplate = function(){
     if(!(this.catID && this.varCnt && this.template)) { return false;}
     var tid = 0;
-    $.ajax({
+    window.$.ajax({
         url: '/models/DB.php',
         type: 'POST',
         jsonp: 'callback',
@@ -48,14 +49,14 @@ Template.prototype.insertTemplate = function(){
             console.log(data);
         }
     });
-    $( document ).ajaxSuccess(function( event, xhr, settings ) {
+    window.$( document ).ajaxSuccess(function( event, xhr, settings ) {
         var d = settings.data;
       if ( settings.url == "/models/DB.php"  && d.includes("insertTemplate")) {
           try{
           var results = JSON.parse(xhr.responseText);
           tid = results[0]['LAST_INSERT_ID()'];
           console.log(results[0]);
-          location.reload();
+          window.location.reload();
           }catch(e){
               console.log(e);
               var footerLog = document.getElementById('log');
@@ -64,7 +65,7 @@ Template.prototype.insertTemplate = function(){
       }
     });
     this.tempID = tid;
-}
+};
 
 Template.prototype.createListGroupItem = function(){
     var div = document.createElement('div');
@@ -74,6 +75,19 @@ Template.prototype.createListGroupItem = function(){
     span.classList.add('list-group-item-text');
     var text = 'Template-'+this.tempID+": "+this.template+"?";
     span.innerHTML = text;
-    div.appendChild(span)
+    div.appendChild(span);
     return div;
-}
+};
+
+Template.prototype.getAdditionalCats = function(){
+    if(this.varCnt>1){
+        var array=[];
+        var tArr = this.template.split("0");
+        for(var i=0, len=tArr.length;i<len;i++){
+            if(window.cats.toID(tArr[i])){
+                array.push(window.cats.toID(tArr[i]));
+            }
+        }
+        this.additionalCats=array;
+    }
+};

@@ -29,8 +29,6 @@
           if($_SESSION['admin']){?>
               <li><a href="index.php?action=newTemp">Admin</a></li>
       <?php } ?>
-                
-          <li><a href="index.php?action=contact">Contact</a></li>
       </ul>
       
     </div><!-end collapse>
