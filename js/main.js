@@ -21,6 +21,7 @@ var lnkSave;
 var footerLog;
 var panelRendered;
 var templatesView;
+var page;
 
 var tinymce;
 var badgeCount = 0;
@@ -32,13 +33,17 @@ var templates;
 
 window.onload = function(){
   //caching data
+  page = new window.Page(currPage);
+  console.log(page);
   cats = new window.Categories();
   cats.setList();
   templates = new window.TempList();
   templates.setList();
   words = new window.WordList();
   words.setList();
-  
+  window.questions = new window.QuestionList(window.page.pageID);
+  window.questions.setList();
+
   panelRendered = false;
   pageListItems = document.querySelectorAll(".pageList");
   if(pageListItems){
@@ -51,17 +56,11 @@ window.onload = function(){
   if(btnSavePage){
   btnSavePage.addEventListener('click', savePage);
   }
-  if(currPage){
-    var temp = currPage;
-    currPage = new window.Page(temp);
-  }else{
-    currPage = new window.Page();
-  }
-  topics = new window.TopicsList(currPage.pageID);
+  
+  topics = new window.TopicsList(window.page.pageID);
   topics.setList();
-  questions = new window.QuestionList();
-  questions.setList();
-
+  
+  
   lnkLoad = document.getElementById('lnkLoad');
   if(lnkLoad){
   lnkLoad.addEventListener('click', updatePageList);
@@ -76,20 +75,30 @@ function updatePageList(){
   
 }
 
+function checkQuestions(){
+  if(!(window.questions && window.topics)){console.log('Nothing to ask about'); return;}
+  // var Qs = window.questions.getCandidates();
+  // var Ts = window.topics.getRelevant();
+  if(window.questions.list.length>0){
+    window.questions.newQuestion();
+  }
+  
+}
+
 function updateSaveModal(){
-  currPage = new window.Page();
-  currPage.getNewInfo();
+  window.page = new window.Page();
+  window.page.getNewInfo();
   var lblTitle = document.getElementById('lblPageTitleSave');
-  lblTitle.innerHTML = currPage.pageTitle;
+  lblTitle.innerHTML = window.page.pageTitle;
 }
 
 function savePage(event){
-  currPage = new window.Page();
-  currPage.getNewInfo();
+  window.page = new window.Page();
+  window.page.getNewInfo();
   if(loaded){
-    currPage.updatePage();
+    window.page.updatePage();
   }else{
-    currPage.insertPage();
+    window.page.insertPage();
     topics.insertNewTopics();
   }
 }
@@ -130,6 +139,7 @@ function analyzeText(event){
   var newList = uniq(wList);
   //topics.setList();
   topics.updateList(newList);
+  topics.setPageForList();
   updateTopicsList();
   updateBadgeCount();
 }
@@ -315,41 +325,50 @@ function toggleCatConfirm(event){
 
 function setRelevance(event){
   //TODO move upadateQuestionRelevantState to Question Class
-    var q_elements = this.id.split('_');
-    var prefix = q_elements[0];
-    var qid = q_elements[1];
-    if(prefix == "restore"){
-        upadateQuestionRelevantState(qid,null);
-    }else if(prefix == "dismiss"){
-        upadateQuestionRelevantState(qid,false);
-    }else if(prefix == "chk"){
-        upadateQuestionRelevantState(qid,true);
-    }
-    var div = this.parentElement;
-    var card = div.parentElement;
-    card.classList.add("relevanceSet");
-    updateBadgeCount();
+  var q_elements = this.id.split('_');
+  var prefix = q_elements[0];
+  var index = q_elements[1];
+  if(prefix == "restore"){
+      window.questions.list[index].relevant = null;
+  }else if(prefix == "dismiss"){
+      window.questions.list[index].relevant = false;
+  }else if(prefix == "chk"){
+      window.questions.list[index].relevant = true;
+  }
+  updateQuestions();
+  updateBadgeCount();
 }
 
 function setTopicRelevance(event){
+  console.log(this);
     var t_elements = this.id.split('_');
     var prefix = t_elements[0];
     var wid = t_elements[1];
-    console.log(wid);
+    // console.log(wid);
     var ddl = document.getElementById('ddlWordCat_'+wid);
-    var selected = ddl.selectedOptions[0].value;
-    console.log(selected);
+    if(ddl){
+      var selected = ddl.selectedOptions[0].value;
+    }
     var cat = null;
-    if(selected!="Top"){
+    if(selected!="Top" && selected!="NaN"){
       cat = cats.toID(selected);
     }
-    var word = document.getElementById('wid_'+wid).innerHTML;
-    
+    var span = document.getElementById('wid_'+wid);
+    var word = span.innerHTML;
+
     var newTopic = topics.findTopic(word);
-    var rel;
-    var newWord;
-    if(!newTopic){return;}
+    // console.log(newTopic);
+    var index;
     
+    var newWord;
+    var title;
+    if(newTopic){
+      index = newTopic.index;
+      title = newTopic.topTitle;
+    }else{
+      return;
+    }
+    var t
     if(prefix == "confirmT"){
       if(selected=="Top"){
         newWord = new window.Word(null,null,newTopic.topTitle);
@@ -357,16 +376,20 @@ function setTopicRelevance(event){
         toggleTopicSelect(newWord);
         return;
       }
-      rel = true;
-    }else if(prefix == "dismissT"){
-      rel = false;
+      
+      console.log(window.page.pageID);
+      t = new window.Topic(null,index,title,cat,window.page.pageID,true);
+    }else{
+      t = new window.Topic(null,index,title,null,window.page.pageID,false);
     }
-    topics.list[wid].catID = cat;
-    topics.list[wid].relevant = rel;
-    topics.list[wid].insertTopic();
+
+    
+    console.log('JUST BEFORE ',t);
+    topics.list[index] = t;
+    topics.list[index].insertTopic()
     // newWord.insertWord();
     updateTopicsList();
-    
+    window.questions.newQuestion();
     //card.classList.add("relevanceSet");
     updateBadgeCount();
 }
@@ -381,6 +404,7 @@ function updateTopicsList(word){
   if(!word){word=false;}
   topics.renderTopicCards(word);
   setListeners();
+  updateQuestionsList();
 }
 
 function toggleVisible(event){
@@ -425,12 +449,6 @@ function getArrElementByID(array,id){
     return null;
 }
 
-function upadateQuestionRelevantState(questionID, relevant){
-    //client side version dev only
-    questions[questionID].relevant = relevant;
-    updateQuestions();
-}
-
 function updateQuestions(){
     clearQuestions();
     updateTopicsList();
@@ -441,20 +459,10 @@ function updateQuestions(){
 
 function updateQuestionsList(){
     getElements();
-    for(var i=0;i<questions.length;i++){
-        //card
-        var qCard = questions[i].createQuestionCard();
-        if(questions[i].relevant===null){
-            if(q_list==null){ getElements(); console.log(q_list); }
-            q_list.appendChild(qCard);
-            badgeCount++;
-        }else{
-            if(old_q_list==null){ getElements(); console.log(old_q_list); }
-            old_q_list.appendChild(qCard);
-          
-        }
-        
-    }
+    window.questions.newQuestion();
+    window.questions.renderCandidatesQuestionCards();
+    window.questions.renderOldQuestionCards();
+    
 }
 
 function clearQuestions(){

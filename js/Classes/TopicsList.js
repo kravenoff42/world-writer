@@ -8,8 +8,6 @@ function TopicsList(pageID){
 }
 
 TopicsList.prototype.setList = function(){
-    if(!this.pageID) { return false;}
-    var tempList = [];
     window.$.ajax({
         url: '/models/DB.php',
         type: 'POST',
@@ -33,9 +31,10 @@ TopicsList.prototype.setList = function(){
     
               for(var i = 0;i<results.length;i++){
                 //   console.log(results[i])
-                  var topic = new window.Topics(results[i]);
-                  tempList.push(topic);
+                  var topic = new window.Topic(results[i],i);
+                  window.topics.list.push(topic);
               }
+              console.log('topics.list Set');
           }catch(e){
               console.log(e);
              // console.log(xhr.responseText);
@@ -44,12 +43,12 @@ TopicsList.prototype.setList = function(){
           }
         }
     });
-    this.list = tempList;
 };
 TopicsList.prototype.updateList = function(wordArr){
     for ( var i=0, len=wordArr.length; i < len; i++ ){
         if(!this.findTopic(wordArr[i])){
-            var newTopic = new window.Topic(null,wordArr[i],this.pageID);
+            var index = this.list.length;
+            var newTopic = new window.Topic(null,index,wordArr[i],this.pageID);
             this.list.push(newTopic);
         }
     }
@@ -62,6 +61,7 @@ TopicsList.prototype.findTopic = function(word){
     }
     return false;
 };
+
 TopicsList.prototype.hasFromDB = function(){
     for(var i=0,len = this.len();i<len;i++){
         if(this.list[i].wordID){
@@ -75,6 +75,7 @@ TopicsList.prototype.len = function(){
     return this.list.length;
 };
 TopicsList.prototype.renderTopicCards = function(addedTopic){
+    if(this.list.length<=0){console.log('No Topics!');return;}
     var first = false;
     if(addedTopic){first = true;}
     var candidates = this.getCandidates();
@@ -82,27 +83,37 @@ TopicsList.prototype.renderTopicCards = function(addedTopic){
     // console.log(candidates);
     // console.log(this.list);
     var tCard;
+    var chosen = [];
     for(var i=0;i<4 && i<len;i++){
         if(first){
-            tCard = addedTopic.words[0].createCandidateCard(index);
+            tCard = addedTopic.words[0].createCandidateCard(addedTopic.index);
             first = false;
         }else{
             var rt = Math.floor(Math.random()*(len-1));
-            var top = candidates[rt][1];
+            var top = candidates[rt];
             var rw = Math.floor(Math.random()*(top.words.length-1));
-            var index = candidates[rt][0];
-            console.log(top);
-
-            console.log(top.words[rw]);
-            tCard = top.words[rw].createCandidateCard(index);
+            
+            tCard = top.words[rw].createCandidateCard(top.index);
+            for(var j=0;j<chosen.length;j++){
+                if(top.words[rw].wordStr==chosen[j]){tCard = null }
+            }
+            chosen.push(top.words[rw].wordStr);
         }
         if(window.c_list==null){ window.setContainers(); window.getElements(); console.log(window.c_list);  }
-        window.c_list.appendChild(tCard);
+        if(tCard){window.c_list.appendChild(tCard);}
     }
 };
+TopicsList.prototype.setPageForList = function(){
+    for(var i=0,len = this.len();i<len;i++){
+        if(this.list[i].pageID==null){
+            this.list[i].pageID = this.pageID;
+        }
+    }
+}
 TopicsList.prototype.addTopic = function(word){
     //console.log(this.findTopic(word));
-    var newTop = new window.Topic(null,word,this.pageID);
+    var index = this.list.length;
+    var newTop = new window.Topic(null,index,word,this.pageID);
     if(!this.findTopic(word)){
         this.list.push(newTop);
     }else{
@@ -115,7 +126,7 @@ TopicsList.prototype.getCandidates = function(){
     
     for(var i=0,len = this.len();i<len;i++){
         if(this.list[i].relevant===null){
-            array.push([i,this.list[i]]);
+            array.push(this.list[i]);
         }
     }
     return array;
@@ -124,7 +135,7 @@ TopicsList.prototype.getTopicsByCat = function(catID){
     var array = [];
     for(var i=0,len = this.len();i<len;i++){
         if(this.list[i].catID===catID){
-            array.push([i,this.list[i]]);
+            array.push(this.list[i]);
         }
     }
     return array;
@@ -133,8 +144,8 @@ TopicsList.prototype.getRelevant = function(){
     var array = [];
     
     for(var i=0,len = this.len();i<len;i++){
-        if(this.list[i].relevant===true){
-            array.push([i,this.list[i]]);
+        if(this.list[i].relevant==true){
+            array.push(this.list[i]);
         }
     }
     return array;
@@ -164,7 +175,6 @@ TopicsList.prototype.getTopicWords = function(){
 TopicsList.prototype.insertNewTopics = function(pid){
     for(var i=0,len = this.len();i<len;i++){
         if(this.list[i].pageID==null){
-            this.list[i].pageID = pid;
             this.list[i].insertTopic();
         }
     }

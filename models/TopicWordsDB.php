@@ -1,26 +1,5 @@
 <?php 
 
-function deleteTopicWord($wordID, $db) { 
-    try {
-    
-        // calling stored procedure command
-        $sql = "CALL deleteTopicWord(:wordID)";
-    
-        // prepare for execution of the stored procedure
-        $stmt = $db->prepare($sql);
-    
-        // pass value to the command
-        $stmt->bindParam(':wordID', $wordID, PDO::PARAM_INT);
-
-        // execute the stored procedure
-        $stmt->execute();
-        
-        $stmt->closeCursor();
-    
-    } catch (PDOException $e) {
-        die("Error occurred:" . $e->getMessage());
-    }
-} 
 function getWordsAll($db) { 
     try {
         $words = array();
@@ -29,34 +8,6 @@ function getWordsAll($db) {
     
         // prepare for execution of the stored procedure
         $stmt = $db->prepare($sql);
-    
-        // execute the stored procedure
-        $stmt->execute();
-    
-        $stmt->setFetchMode(PDO::FETCH_ASSOC);
-
-        while ($row = $stmt->fetch()):
-            array_push($words,$row);
-        endwhile;
-
-        $stmt->closeCursor();
-    
-    } catch (PDOException $e) {
-        die("Error occurred:" . $e->getMessage());
-    }
-    echo json_encode($words);
-} 
-function getWordsByID($wordID, $db) { 
-    try {
-        $words = array();
-        // calling stored procedure command
-        $sql = "CALL getWordsByID(:wordID)";
-    
-        // prepare for execution of the stored procedure
-        $stmt = $db->prepare($sql);
-    
-        // pass value to the command
-        $stmt->bindParam(':wordID', $wordID, PDO::PARAM_INT);
     
         // execute the stored procedure
         $stmt->execute();

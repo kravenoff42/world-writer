@@ -4,7 +4,6 @@ function WordList(){
 }
 
 WordList.prototype.setList = function(){
-    var tempList = [];
     window.$.ajax({
         url: '/models/DB.php',
         type: 'POST',
@@ -28,8 +27,9 @@ WordList.prototype.setList = function(){
               for(var i = 0;i<results.length;i++){
                 //   console.log(results[i])
                   var word = new window.Word(results[i],i);
-                  tempList.push(word);
+                  window.words.list.push(word);
               }
+              console.log('Words.list Set');
           }catch(e){
               console.log(e);
              // console.log(xhr.responseText);
@@ -38,10 +38,8 @@ WordList.prototype.setList = function(){
           }
         }
     });
-    this.list = tempList;
 };
 WordList.prototype.setInstanceList = function(){
-    var tempList = [];
     window.$.ajax({
         url: '/models/DB.php',
         type: 'POST',
@@ -63,9 +61,9 @@ WordList.prototype.setInstanceList = function(){
               var results = JSON.parse(xhr.responseText);
     
               for(var i = 0;i<results.length;i++){
-                   console.log(results[i]);
-                   tempList.push(results[i]);
+                   window.words.instanceList.push(results[i]);
               }
+              console.log('Words.instanceList Set');
           }catch(e){
               console.log(e);
              // console.log(xhr.responseText);
@@ -74,7 +72,6 @@ WordList.prototype.setInstanceList = function(){
           }
         }
     });
-    this.instanceList = tempList;
 };
 WordList.prototype.updateList = function(wordArr){
     for ( var i=0, len=wordArr.length; i < len; i++ ){

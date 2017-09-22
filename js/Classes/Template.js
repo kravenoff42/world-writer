@@ -1,4 +1,6 @@
-function Template(tempFromDB,catID,varCnt,template,tempID){
+function Template(tempFromDB,index,catID,varCnt,template,tempID){
+    //Properties
+    this.index = index;
     this.tempID = null;
     this.catID = null; 
     this.varCnt = null;
@@ -31,8 +33,6 @@ function Template(tempFromDB,catID,varCnt,template,tempID){
 }
 
 Template.prototype.insertTemplate = function(){
-    if(!(this.catID && this.varCnt && this.template)) { return false;}
-    var tid = 0;
     window.$.ajax({
         url: '/models/DB.php',
         type: 'POST',
@@ -54,8 +54,7 @@ Template.prototype.insertTemplate = function(){
       if ( settings.url == "/models/DB.php"  && d.includes("insertTemplate")) {
           try{
           var results = JSON.parse(xhr.responseText);
-          tid = results[0]['LAST_INSERT_ID()'];
-          console.log(results[0]);
+          var id = results[0]['LAST_INSERT_ID()'];
           window.location.reload();
           }catch(e){
               console.log(e);
@@ -64,7 +63,6 @@ Template.prototype.insertTemplate = function(){
           }
       }
     });
-    this.tempID = tid;
 };
 
 Template.prototype.createListGroupItem = function(){

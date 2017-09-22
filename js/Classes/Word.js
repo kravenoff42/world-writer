@@ -38,7 +38,6 @@ function Word(wordFromDB,index,wordStr,topID,plural,wordID){
 }
 
 Word.prototype.insertWord = function(){
-    if(!(this.topID && this.wordStr)) { return false;}
     window.$.ajax({
         url: '/models/DB.php',
         type: 'POST',
@@ -50,6 +49,7 @@ Word.prototype.insertWord = function(){
             'topID': this.topID,
             'plural': this.plural
         },
+        index:this.index,
         error: function(data){
             alert("oh No something when wrong with saving the data");
             console.log(data);
@@ -57,11 +57,12 @@ Word.prototype.insertWord = function(){
     });
     window.$( document ).ajaxSuccess(function( event, xhr, settings ) {
         var d = settings.data;
+        var i = settings.index;
       if ( settings.url == "/models/DB.php"  && d.includes("insertWord")) {
           try{
             var results = JSON.parse(xhr.responseText);
             var id = results[0]['LAST_INSERT_ID()'];
-            this.wordID = id;
+            window.words.list[i].wordID = id;
         window.$( ".log" ).text( "Respnse: wordID = " +
            results[0]["LAST_INSERT_ID()"]);
            
@@ -72,18 +73,17 @@ Word.prototype.insertWord = function(){
       }
     });
 };
-Word.prototype.createCandidateCard = function(i){ 
+Word.prototype.createCandidateCard = function(index){ 
     //card
     var tCard = document.createElement("li");
     tCard.classList.add('topic_card');
     tCard.classList.add('dropIn');
-    
 
     //t div
     var tDiv = document.createElement("div");
     tDiv.classList.add('q_div');
     var tSpan = document.createElement('span');
-    tSpan.id = 'wid_'+i;
+    tSpan.id = 'wid_'+index;
     tSpan.classList.add('topic');
     tSpan.innerHTML = this.wordStr;
     tDiv.appendChild(tSpan);
@@ -91,7 +91,7 @@ Word.prototype.createCandidateCard = function(i){
     //select div
     var ddlDiv = document.createElement("div");
     ddlDiv.classList.add('q_div');
-    var ddl = window.cats.createDDL(i);
+    var ddl = window.cats.createDDL(index);
     ddlDiv.appendChild(ddl);
     
     // confirm div
@@ -99,7 +99,7 @@ Word.prototype.createCandidateCard = function(i){
     conDiv.classList.add('q_div');
     var conSpan = document.createElement('span');
     var conI = document.createElement('i');
-    conSpan.id = "confirmT_"+i;
+    conSpan.id = "confirmT_"+index;
     conI.innerHTML = 'done';
     conSpan.classList.add('clickable');
     conSpan.classList.add('hidden');
@@ -114,10 +114,10 @@ Word.prototype.createCandidateCard = function(i){
     disDiv.classList.add('q_div');
     var disSpan = document.createElement('span');
     var disI = document.createElement('i');
-    disSpan.id = "dismissT_"+i;
+    disI.id = "dismisT_"+index;
     disI.innerHTML = 'not_interested';
     disSpan.classList.add('clickable');
-    conSpan.classList.add('tCardBtn');
+    disI.classList.add('tCardBtn');
     disI.classList.add('material-icons');
     disSpan.appendChild(disI);
     disDiv.appendChild(disSpan);

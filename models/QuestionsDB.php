@@ -1,26 +1,5 @@
 <?php 
 
-function deleteQuestion($questionID, $db) { 
-    try {
-    
-        // calling stored procedure command
-        $sql = "CALL deleteQuestion(:questionID)";
-    
-        // prepare for execution of the stored procedure
-        $stmt = $db->prepare($sql);
-    
-        // pass value to the command
-        $stmt->bindParam(':questionID', $questionID, PDO::PARAM_INT);
-
-        // execute the stored procedure
-        $stmt->execute();
-        
-        $stmt->closeCursor();
-    
-    } catch (PDOException $e) {
-        die("Error occurred:" . $e->getMessage());
-    }
-} 
 function getQuestionsAll($db) { 
     try {
         $questions = array();
@@ -29,34 +8,6 @@ function getQuestionsAll($db) {
     
         // prepare for execution of the stored procedure
         $stmt = $db->prepare($sql);
-    
-        // execute the stored procedure
-        $stmt->execute();
-    
-        $stmt->setFetchMode(PDO::FETCH_ASSOC);
-
-        while ($row = $stmt->fetch()):
-            array_push($questions,$row);
-        endwhile;
-
-        $stmt->closeCursor();
-    
-    } catch (PDOException $e) {
-        die("Error occurred:" . $e->getMessage());
-    }
-    echo json_encode($questions);
-} 
-function getQuestionsByID($questionID, $db) { 
-    try {
-        $questions = array();
-        // calling stored procedure command
-        $sql = "CALL getQuestionsByID(:questionID)";
-    
-        // prepare for execution of the stored procedure
-        $stmt = $db->prepare($sql);
-    
-        // pass value to the command
-        $stmt->bindParam(':questionID', $questionID, PDO::PARAM_INT);
     
         // execute the stored procedure
         $stmt->execute();
@@ -85,59 +36,6 @@ function getQuestionsByPage($pageID, $db) {
     
         // pass value to the command
         $stmt->bindParam(':pageID', $pageID, PDO::PARAM_INT);
-    
-        // execute the stored procedure
-        $stmt->execute();
-    
-        $stmt->setFetchMode(PDO::FETCH_ASSOC);
-
-        while ($row = $stmt->fetch()):
-            array_push($questions,$row);
-        endwhile;
-
-        $stmt->closeCursor();
-    
-    } catch (PDOException $e) {
-        die("Error occurred:" . $e->getMessage());
-    }
-    echo json_encode($questions);
-} 
-function getQuestionsByTemplate($tempID, $db) { 
-    try {
-        $questions = array();
-        // calling stored procedure command
-        $sql = "CALL getQuestionsByTemplate(:tempID)";
-    
-        // prepare for execution of the stored procedure
-        $stmt = $db->prepare($sql);
-    
-        // pass value to the command
-        $stmt->bindParam(':tempID', $tempID, PDO::PARAM_INT);
-    
-        // execute the stored procedure
-        $stmt->execute();
-    
-        $stmt->setFetchMode(PDO::FETCH_ASSOC);
-
-        while ($row = $stmt->fetch()):
-            array_push($questions,$roq);
-        endwhile;
-
-        $stmt->closeCursor();
-    
-    } catch (PDOException $e) {
-        die("Error occurred:" . $e->getMessage());
-    }
-    echo json_encode($questions);
-} 
-function getRelevantQuestions($db) { 
-    try {
-        $questions = array();
-        // calling stored procedure command
-        $sql = "CALL getRelevantQuestions()";
-    
-        // prepare for execution of the stored procedure
-        $stmt = $db->prepare($sql);
     
         // execute the stored procedure
         $stmt->execute();

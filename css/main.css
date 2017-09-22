@@ -27,9 +27,11 @@
   background-size: 32px !important;
   padding-top: 50% !important;
 }
-.mce-edit-aria-container>.mce-container-body .mce-sidebar-panel{
-    max-width: 300px !important;
+#mceu_35{
+    min-width: 300px !important;
+    max-width: 330px !important;
 }
+
 #mceu_30-button{
   padding: 2px ;
 }

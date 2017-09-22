@@ -1,6 +1,6 @@
 <?php 
 if(isset($currPage)){
-    $pID = $currPage['loadPageID'];
+    $pID = $currPage['pageID'];
     
     // $page = getPagesByIDphp($pID, $db);
     $title = $currPage['pageTitle'];

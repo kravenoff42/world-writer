@@ -15,7 +15,7 @@ function Question(questionFromDB,index,question,tempID,template,varCnt,relevant,
         if(questionFromDB.tempID){
             this.tempID = questionFromDB.tempID; 
         }
-        if(questionFromDB.relevant){
+        if(questionFromDB.relevant!=undefined){
             this.relevant = questionFromDB.relevant; 
         }
     }else{
@@ -34,8 +34,8 @@ function Question(questionFromDB,index,question,tempID,template,varCnt,relevant,
         if(varCnt){
             this.varCnt = varCnt; 
         }
-        if(relevant){
-            this.relevant = relevant; 
+        if(relevant!=undefined && relevant != null){
+            this.relevant = relevant;
         }
     }
 }
@@ -84,19 +84,17 @@ Question.prototype.getWords = function() {
     // });
 };
 Question.prototype.insertQuestion = function(){ 
-    if(!(this.topTitle && this.catID && this.relevant && this.pageID)) { return false;}
     window.$.ajax({
         url: '/models/DB.php',
         type: 'POST',
         jsonp: 'callback',
         data: {
-            'table':'topics',
-            'function':'insertTopic', 
-            'topTitle': this.topTitle,
-            'catID': this.catID,
+            'table':'questions',
+            'function':'insertQuestion', 
+            'tempID': this.tempID,
             'relevant':this.relevant,
-            'pageID':this.pageID
         },
+        index:this.index,
         error: function(data){
             alert("oh No something when wrong with saving the data");
             console.log(data);
@@ -104,13 +102,14 @@ Question.prototype.insertQuestion = function(){
     });
     window.$( document ).ajaxSuccess(function( event, xhr, settings ) {
         var d = settings.data;
-      if ( settings.url == "/models/DB.php"  && d.includes("insertTopic")) {
+        var i = settings.index;
+      if ( settings.url == "/models/DB.php"  && d.includes("insertQuestion")) {
           try{
             var results = JSON.parse(xhr.responseText);
             var id = results[0]['LAST_INSERT_ID()'];
-            this.questionID = id;
-            window.words.updateInstanceList(this.words,this.questionID);
-            //return id;
+            window.questions.list[i].questionID = id;
+            var words = window.questions.list[i].questionID;
+            window.words.updateInstanceList(words,id);
           }catch(e){
               console.log(e);
               console.log(xhr.responseText);
@@ -145,7 +144,7 @@ Question.prototype.buildQuestion = function() {
 
 
 
-Question.prototype.createQuestionCard = function(i) { 
+Question.prototype.createQuestionCard = function() { 
     var qCard = document.createElement("li");
     if(this.relevant==null){
         qCard.classList.add('question_card');
@@ -156,7 +155,7 @@ Question.prototype.createQuestionCard = function(i) {
     var chkDiv = document.createElement("div");
     chkDiv.classList.add('q_div');
     var chkSpan = document.createElement('span');
-    chkSpan.id = "chk_"+i;
+    chkSpan.id = "chk_"+this.index;
     chkSpan.classList.add('clickable');
     var chkI = document.createElement('i');
     if(this.relevant===true){
@@ -171,9 +170,9 @@ Question.prototype.createQuestionCard = function(i) {
     var qDiv = document.createElement("div");
     qDiv.classList.add('q_div');
     var qSpan = document.createElement('span');
-    qSpan.id = 'qid_'+i;
+    qSpan.id = 'qid_'+this.index;
     qSpan.classList.add('question');
-    qSpan.innerHTML = this.question;
+    qSpan.innerHTML = this.question+'?';
     qDiv.appendChild(qSpan);
     
     // dismiss div
@@ -182,10 +181,10 @@ Question.prototype.createQuestionCard = function(i) {
     var disSpan = document.createElement('span');
     var disI = document.createElement('i');
     if(this.relevant===null){
-        disSpan.id = "dismiss_"+i;
+        disSpan.id = "dismiss_"+this.index;
         disI.innerHTML = 'not_interested';
     }else{
-        disSpan.id = "restore_"+i;
+        disSpan.id = "restore_"+this.index;
         disI.innerHTML = 'refresh';
     }        
     disSpan.classList.add('clickable');

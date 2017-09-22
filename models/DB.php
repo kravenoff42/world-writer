@@ -36,23 +36,11 @@ switch($table){
         if(isset($_POST['pageID'])){$pageID = $_POST['pageID'];}
         
         switch($function){
-            case 'deleteQuestion':
-                deleteQuestion($questionID, $db);
-                break;
             case 'getQuestionsAll':
                 getQuestionsAll($db);
                 break;
-            case 'getQuestionsByID':
-                getQuestionsByID($questionID, $db);
-                break;
-            case 'getQuestionsByTemplate':
-                getQuestionsByTemplate($tempID, $db);
-                break;
             case 'getQuestionsByPage':
                 getQuestionsByPage($pageID, $db);
-                break;
-            case 'getRelevantQuestions':
-                getRelevantQuestions($db);
                 break;
             case 'insertQuestion':
                 insertQuestion($tempID, $relevant, $db);
@@ -139,21 +127,6 @@ switch($table){
         if(isset($_POST['relevant'])){$relevant = $_POST['relevant'];}
         
         switch($function){
-            case 'deleteTopic':
-                deleteTopic($topID, $db);
-                break;
-            case 'getTopicsAll':
-                getTopicsAll($db);
-                break;
-            case 'getTopicsByID':
-                getTopicsByID($topID, $db);
-                break;
-            case 'getTopicsByCategory':
-                getTopicsByCategory($catID, $db);
-                break;
-            case 'getRelevantTopics':
-                getRelevantTopics($db);
-                break;
             case 'getTopicsByPage':
                 getTopicsByPage($pageID, $db);
                 break;
@@ -177,14 +150,8 @@ switch($table){
         if(isset($_POST['plural'])){$catAbbrev = $_POST['plural'];}
         
         switch($function){
-            case 'deleteTopicWord':
-                deleteTopicWord($wordID, $db);
-                break;
             case 'getWordsAll':
                 getWordsAll($db);
-                break;
-            case 'getWordsByID':
-                getWordsByID($wordID, $db);
                 break;
             case 'getWordsByTopic':
                 getWordsByTopic($topID, $db);
@@ -199,31 +166,10 @@ switch($table){
         break;
     case "wordCategories":
             if(isset($_POST['function'])){$function = $_POST['function'];}
-            else {die("Post Err: No function");}
-            
-            if(isset($_POST['catID'])){$catID = $_POST['catID'];}
-            if(isset($_POST['catName'])){$catName = $_POST['catName'];}
-            if(isset($_POST['catAbbrev'])){$catAbbrev = $_POST['catAbbrev'];}
+            else {die("Post Err: No function");
 
-            switch($function){
-                case 'deleteCategory':
-                    deleteCategory($catID, $db);
-                    break;
-                case 'getCategoriesAll':
+            if($function= 'getCategoriesAll')
                     getCategoriesAll($db);
-                    break;
-                case 'getCategoriesByAbbrev':
-                    getCategoriesByAbbrev($catAbbrev, $db);
-                    break;
-                case 'getCategoriesByID':
-                    getCategoriesByID($catID, $db);
-                    break;
-                case 'insertCategory':
-                    insertCategory($catName, $catAbbrev, $db);
-                    break;
-                case 'updateCategory':
-                    updateCategory($catID, $catName, $catAbbrev, $db);
-                    break;
             }
         break;
     case "pages":

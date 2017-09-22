@@ -10,14 +10,8 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <?php
-    if(isset($_SESSION)){
-    session_destroy();
     
-    }
-    session_start();
-    $_SESSION['admin']=true;
     include(__DIR__.'/models/DB.php'); 
-    // unset($_POST);
     
     ?>
 
@@ -71,9 +65,9 @@
     <script src="js/Classes/Page.js" charset="utf-8"></script>
     
     <!--main logic-->
+    <?php if($loaded){ ?> <script> currPage = <?php echo json_encode($currPage); ?> ;loaded = true; </script><?php } ?>
     <script src="js/main.js" charset="utf-8"></script>
     <?php if($_GET['action']=="newTemp"){ ?><script src="js/templates.js" charset="utf-8"></script><?php } ?>
-    <?php if($loaded){ ?> <script> currPage = <?php echo json_encode($currPage) ?> ; loaded = true;  </script><?php } ?>
 
   </body>
 </html>

@@ -1,4 +1,4 @@
-function Page(pageFromDB, pageTitle,content,lastModified,dateCreated,pageID){
+function Page(pageFromDB,pageID, pageTitle,content,lastModified,dateCreated){
     //properties
     this.pageID = null;
     this.pageTitle = null;
@@ -6,19 +6,19 @@ function Page(pageFromDB, pageTitle,content,lastModified,dateCreated,pageID){
     this.lastModified = null;
     this.dateCreated = null;
     if(pageFromDB){
-        if (pageID){
+        if ( pageFromDB.pageID){
             this.pageID = pageFromDB.pageID;
         }
-        if (pageTitle){
+        if ( pageFromDB.pageTitle){
             this.pageTitle = pageFromDB.pageTitle;
         }
-        if (content){
+        if ( pageFromDB.content){
             this.content = pageFromDB.content;
         }
-        if (lastModified){
+        if ( pageFromDB.lastModified){
             this.lastModified = pageFromDB.lastModified;
         }
-        if (dateCreated){
+        if ( pageFromDB.dateCreated){
             this.dateCreated = pageFromDB.dateCreated;
         }
     }else{
@@ -40,44 +40,7 @@ function Page(pageFromDB, pageTitle,content,lastModified,dateCreated,pageID){
     }
 }
 
-Page.prototype.getPagesAll = function(){
-    var tempList = [];
-    window.$.ajax({
-        url: '/models/DB.php',
-        type: 'POST',
-        datatype: 'jsonp',
-        jsonp: 'callback',
-        data: {
-            'table':'pages',
-            'function':'getPagesAll' 
-            },
-         error: function(data){
-            alert("oh No something when wrong with saving the data");
-            console.log(data);
-         }
-    });
-    window.$( document ).ajaxSuccess(function( event, xhr, settings ) {
-        var d = settings.data;
-      if ( settings.url == "/models/DB.php"  && d.includes("getPagesAll")) {
-          try{
-              var results = JSON.parse(xhr.responseText);
-              for(var i = 0;i<results.length;i++){
-                   tempList.push(results[i]);
-              }
-          }catch(e){
-              console.log(e);
-              var footerLog = document.getElementById('log');
-              footerLog.innerHTML = xhr.responseText;
-          }
-      }
-    });
-    return tempList;
-};
-
 Page.prototype.insertPage = function(){
-    if(!(this.pageTitle && this.content)) { return false;}
-    var pid = 0;
-    var tempList = [];
     window.$.ajax({
         url: '/models/DB.php',
         type: 'POST',
@@ -99,12 +62,47 @@ Page.prototype.insertPage = function(){
       if ( settings.url == "/models/DB.php"  && d.includes("insertPage")) {
           try{
             var results = JSON.parse(xhr.responseText);
-            for(var i = 0;i<results.length;i++){
-                pid = results[0]['LAST_INSERT_ID()'];
-                tempList.push(results[i]);
-            }
-            this.pageID = pid;
+            var pid = results[0]['LAST_INSERT_ID()'];
+            window.currPage.pageID = pid;
             window.topics.insertNewTopics(pid);
+            window.topics.pageID = pid;
+            window.questions.pageID = pid;
+          }catch(e){
+              console.log(e);
+              var footerLog = document.getElementById('log');
+              footerLog.innerHTML = xhr.responseText;
+          }
+      }
+    });
+};
+
+Page.prototype.getPage = function(){
+    window.$.ajax({
+        url: '/models/DB.php',
+        type: 'POST',
+        datatype: 'jsonp',
+        jsonp: 'callback',
+        data: {
+            'table':'pages',
+            'function':'getPagesByID',
+            'pageTitle':this.pageID
+            },
+         id:this.pageID,
+         error: function(data){
+            alert("oh No something when wrong with saving the data");
+            console.log('insertPage',data);
+         }
+    });
+    window.$( document ).ajaxSuccess(function( event, xhr, settings ) {
+        var d = settings.data;
+        var id = settings.id;
+      if ( settings.url == "/models/DB.php"  && d.includes("getPagesByID")) {
+          try{
+            var results = JSON.parse(xhr.responseText);
+            // results[0].pageID = id;
+            window.currPage = new window.Page(results[0]);
+            window.currPage.pageID = id;
+            console.log('currPage Set');
           }catch(e){
               console.log(e);
               var footerLog = document.getElementById('log');
@@ -115,8 +113,6 @@ Page.prototype.insertPage = function(){
 };
 
 Page.prototype.updatePage = function(){
-    if(!(this.pageID && this.pageTitle && this.content)) { return false;}
-    var tempList = [];
     window.$.ajax({
         url: '/models/DB.php',
         type: 'POST',
@@ -139,9 +135,6 @@ Page.prototype.updatePage = function(){
       if ( settings.url == "/models/DB.php"  && d.includes("updatePage")) {
           try{
               var results = JSON.parse(xhr.responseText);
-              for(var i = 0;i<results.length;i++){
-                   tempList.push(results[i]);
-              }
           }catch(e){
               console.log(e);
               var footerLog = document.getElementById('log');
@@ -149,7 +142,6 @@ Page.prototype.updatePage = function(){
           }
       }
     });
-    console.log(tempList) ;
 };
 
 Page.prototype.getNewInfo = function(){

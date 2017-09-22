@@ -1,4 +1,4 @@
-function Topic(topicFromDB,index,topTitle,pageID,catID,relevant,topID){ 
+function Topic(topicFromDB,index,topTitle,catID,pageID,relevant,topID){ 
     //Properties
     this.index = index;
     this.topID = null;
@@ -39,7 +39,7 @@ function Topic(topicFromDB,index,topTitle,pageID,catID,relevant,topID){
             var i = this.words.length;
             this.words.push( new window.Word(null,i,topTitle));
         }
-        if(relevant){
+        if(relevant!=undefined && relevant != null){
             this.relevant = relevant;
         }
     }
@@ -48,9 +48,6 @@ function Topic(topicFromDB,index,topTitle,pageID,catID,relevant,topID){
 //Methods
  
 Topic.prototype.insertTopic = function(){
-    var tempList = [];
-    var index = this.index;
-    if(!(this.topTitle && this.catID && this.relevant && this.pageID)) { return false;}
     window.$.ajax({
         url: '/models/DB.php',
         type: 'POST',
@@ -63,6 +60,7 @@ Topic.prototype.insertTopic = function(){
             'relevant':this.relevant,
             'pageID':this.pageID
         },
+        index:this.index,
         error: function(data){
             alert("oh No something when wrong with saving the data");
             console.log(data);
@@ -70,24 +68,21 @@ Topic.prototype.insertTopic = function(){
     });
     window.$( document ).ajaxSuccess(function( event, xhr, settings ) {
         var d = settings.data;
+        var i = settings.index;
       if ( settings.url == "/models/DB.php"  && d.includes("insertTopic")) {
           try{
             var results = JSON.parse(xhr.responseText);
             var id = results[0]['LAST_INSERT_ID()'];
-            window.topics.list[index].topID = id;
-            var i = window.topics.list[index].words.length;
-            var newWord = new window.Word(null,i,this.topTitle,id);
-            tempList.push(newWord);
-            // newWord.insertWord();
-            window.words.list.push(newWord);
-            
+            window.topics.list[i].topID = id;
+            console.log(window.topics.list[i]);
+            window.topics.list[i].updateWords();
+            console.log('Topic Inserted');
           }catch(e){
               console.log(e);
               console.log(xhr.responseText);
           }
       }
     });
-    this.words = tempList;
 };
 Topic.prototype.getValidTemps = function(){
     if(!(this.catID && window.templates)) { return false;}
@@ -125,6 +120,15 @@ Topic.prototype.getValidTemps = function(){
     //     }
     // });
 };
+Topic.prototype.updateWords = function(){ 
+    if(!(this.topID && this.words)) { return false;}
+    var len = this.words.length;
+    for(var i = 0; i <len;i++){
+        if(window.words.topID != this.topID){
+            this.words[i].topID = this.topID;
+        }
+    }
+}
 Topic.prototype.getWords = function(){ 
     if(!(this.topID && window.words)) { return false;}
     var len = window.words.list.length;
@@ -193,9 +197,6 @@ Topic.prototype.changeTitle = function(wordStr){
         this.topTitle = wordFound.wordStr;
     // }
 } ;
-// Topic.prototype.makeWord = function(){
-//     return this.topTitle;
-// };
 Topic.prototype.generateTopicItem = function(){
     //Label
     var tLabel = document.createElement('label');

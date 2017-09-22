@@ -1,5 +1,5 @@
 function QuestionList(pageID){
-    this.list;
+    this.list = [];
     this.pageID = null;
     if(pageID){
         //console.log('pageID set')
@@ -41,8 +41,7 @@ QuestionList.prototype.len = function(){
     return this.list.length;
 };
 QuestionList.prototype.setList = function(){
-    if(!this.pageID) { return false;}
-    var tempList = [];
+    if(!this.pageID){console.log('no pageID!');return;}
     window.$.ajax({
         url: '/models/DB.php',
         type: 'POST',
@@ -53,10 +52,6 @@ QuestionList.prototype.setList = function(){
             'function':'getQuestionsByPage',
             'pageID': this.pageID
             },
-         success: function(data){
-            //access the members
-            console.log('success');
-         },
          error: function(data){
             alert("oh No something when wrong with saving the data");
             console.log(data);
@@ -65,23 +60,22 @@ QuestionList.prototype.setList = function(){
     window.$( document ).ajaxSuccess(function( event, xhr, settings ) {
         var d = settings.data;
       if ( settings.url == "/models/DB.php"  && d.includes("getQuestionsByPage")) {
-          try{
-              var results = JSON.parse(xhr.responseText);
-    
-              for(var i = 0;i<results.length;i++){
-                  console.log(results[i]);
-                  var question = new window.Question(results[i],i);
-                  tempList.push(question);
-              }
-          }catch(e){
-              console.log(e);
-              var footerLog = document.getElementById('log');
-              footerLog.innerHTML = xhr.responseText;
-          }
+            try{
+                var results = JSON.parse(xhr.responseText);
+                for(var i = 0;i<results.length;i++){
+                    console.log(results[i]);
+                    var question = new window.Question(results[i],i);
+                    window.questions.list.push(question);
+                }
+                console.log('questions.list Set');
+                window.questions.buildQuestions();
+            }catch(e){
+                console.log(e);
+                var footerLog = document.getElementById('log');
+                footerLog.innerHTML = xhr.responseText;
+            }
       }
     });
-    this.list = tempList;
-    this.buildQuestions();
 };
 QuestionList.prototype.findQuestion = function(question){ 
     for(var i=0, len = this.list.length;i<len;i++){
@@ -106,17 +100,16 @@ QuestionList.prototype.getCandidates = function(){
     
     for(var i=0,len = this.len();i<len;i++){
         if(this.list[i].relevant===null){
-            array.push([i,this.list[i]]);
+            array.push(this.list[i]);
         }
     }
     return array;
 };
 QuestionList.prototype.getOldQuestions = function(){
     var array = [];
-    
     for(var i=0,len = this.len();i<len;i++){
         if(this.list[i].relevant!==null){
-            array.push([i,this.list[i]]);
+            array.push(this.list[i]);
         }
     }
     return array;
@@ -128,9 +121,8 @@ QuestionList.prototype.renderCandidatesQuestionCards = function(){
     console.log(this.list);
     for(var i=0;i<4 && i<len;i++){
         var rq = Math.floor(Math.random()*(len-1));
-        var index = candidates[rq][0];
-        var ques = candidates[rq][1];
-        var qCard = ques.createQuestionCard(index);
+        var ques = candidates[rq];
+        var qCard = ques.createQuestionCard();
         if(window.q_list==null){ window.setContainers(); window.getElements(); console.log(window.q_list);  }
         window.q_list.appendChild(qCard);
     }
@@ -141,21 +133,24 @@ QuestionList.prototype.renderOldQuestionCards = function(){
     console.log(oldQuestions);
     console.log(this.list);
     for(var i=0; i<len;i++){
-        var index = oldQuestions[i][0];
-        var ques = oldQuestions[i][1];
-
-        var qCard = ques.createQuestionCard(index);
+        var qCard = oldQuestions[i].createQuestionCard();
         if(window.old_q_list==null){ window.setContainers(); window.getElements(); console.log(window.old_q_list);  }
         window.old_q_list.appendChild(qCard);
     }
 };
 
 QuestionList.prototype.newQuestion = function() { 
+    console.log('STARTING NEW Q');
     var validTopics = window.topics.getRelevant();
+    if(validTopics.length<1){console.log('No Valid Topics'); return;}
+    console.log(validTopics);
     var rt = Math.floor(Math.random()*(validTopics.length-1));
     var chosenTopic = validTopics[rt];
+    if(!chosenTopic){console.log('Cant Choose Topic'); return;}
+    console.log(chosenTopic);
     var rw = Math.floor(Math.random()*(chosenTopic.words.length-1));
     var chosenWord = chosenTopic.words[rw];
+    console.log(chosenWord);
     chosenTopic.getValidTemps();
     var rtp = Math.floor(Math.random()*(chosenTopic.validTemps.length-1));
     var chosenTemplate = chosenTopic.validTemps[rtp];
@@ -172,16 +167,24 @@ QuestionList.prototype.newQuestion = function() {
         }
     }
     var tString = chosenTemplate.template;
+    console.log(tString);
     var qArray = tString.split("0");
     var wordCnt=0;
     for(var j = 1;j<qArray.length;j+=2){
         qArray[j] = templateWords[wordCnt].wordStr;
         wordCnt++;
     }
+    console.log(qArray);
     
     var newQuestionStr = qArray.join("");
+    console.log(newQuestionStr);
     var index = this.list.length;
     var newQuestion = new window.Question(null,index,newQuestionStr,chosenTemplate.tempID,chosenTemplate.template,chosenTemplate.template.varCnt);
+    console.log(newQuestion);
     this.list.push(newQuestion);
-    newQuestion.insertQuestion();
+    this.list[index].insertQuestion();
 };
+QuestionList.prototype.updateQuestion = function(index,rel){
+    this.list[index].relevant = rel;
+    
+}

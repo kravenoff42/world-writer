@@ -4,7 +4,6 @@ function TempList(){
 }
 
 TempList.prototype.setList = function(){
-    var tempList = [];
     window.$.ajax({
         url: '/models/DB.php',
         type: 'POST',
@@ -27,13 +26,14 @@ TempList.prototype.setList = function(){
     
               for(var i = 0;i<results.length;i++){
                 //   console.log(results[i])
-                  var template = new Template(results[i]);
+                  var template = new window.Template(results[i],i);
                   if(window.templatesView!==null){
                       var div = template.createListGroupItem();
                       window.$(window.templatesView).prepend(div);
                   }
-                  tempList.push(template);
+                  window.templates.list.push(template);
               }
+              console.log('templates.list Set');
           }catch(e){
               console.log(e);
              // console.log(xhr.responseText);
@@ -42,5 +42,4 @@ TempList.prototype.setList = function(){
           }
         }
     });
-    this.list = tempList;
 };
