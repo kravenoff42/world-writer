@@ -166,11 +166,8 @@ switch($table){
         break;
     case "wordCategories":
             if(isset($_POST['function'])){$function = $_POST['function'];}
-            else {die("Post Err: No function");
-
-            if($function= 'getCategoriesAll')
-                    getCategoriesAll($db);
-            }
+            if($function == "getCategoriesAll" ){ getCategoriesAll($db); }
+            
         break;
     case "pages":
         if(isset($_POST['function'])){$function = $_POST['function'];}

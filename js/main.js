@@ -31,6 +31,52 @@ var words;
 var questions;
 var templates;
 
+tinymce.init({
+  selector: '#tny',
+  height: 600,
+  width: 'inherit',
+  theme: 'modern',
+  plugins: [
+    'autolink lists link charmap hr anchor pagebreak',
+    'searchreplace wordcount visualchars code',
+    'insertdatetime nonbreaking contextmenu directionality',
+    'paste'
+  ],
+  browser_spellcheck: true,
+  toolbar1: 'undo redo | insert | styleselect | bold italic underline | link image | newTopic',
+  content_css: [
+    '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
+    '/css/bootstrap.min.css',
+    '/css/normalize.css',
+    '/css/main.css'
+  ],
+  
+  setup: function (editor) {
+    editor.on('change', contentChanged),
+    editor.on('keyup', periodPressed),
+    editor.addSidebar('mysidebar', {
+      tooltip: 'My sidebar',
+      icon: 'mylist',
+      onrender: function (api) {
+        setContainers();
+        onStart();
+        insertQuestionBadge();
+      }//,
+      // onshow: function (api) {
+      //   updateBadgeCount();
+      // },
+      // onhide: function (api) {
+      //   updateBadgeCount();
+      // }
+    });
+
+  editor.addButton('newTopic', {
+    text: "Set Topic",
+    onclick: defineWord
+  });
+  }
+ });
+ 
 window.onload = function(){
   //caching data
   page = new window.Page(currPage);
@@ -71,9 +117,24 @@ window.onload = function(){
   }
 };
 
+//  --Save Functions--
+//  +++Save OnLoad+++
+//  --Load functions--
+//  +++Load OnLoad+++
+//  --Data Caching--
+//  +++Creating lists+++
+//  +++sending Data to DB+++
+//  --Side Panel Functions--
+//  +++SP reading text+++
+//  +++SP element Creating+++
+//  +++SP User feedback+++
+
+
 function updatePageList(){
   
 }
+
+
 
 function checkQuestions(){
   if(!(window.questions && window.topics)){console.log('Nothing to ask about'); return;}
@@ -189,51 +250,7 @@ function defineWord(){
 //   }
 // }
 
-tinymce.init({
-  selector: '#tny',
-  height: 600,
-  width: 'inherit',
-  theme: 'modern',
-  plugins: [
-    'autolink lists link charmap hr anchor pagebreak',
-    'searchreplace wordcount visualchars code',
-    'insertdatetime nonbreaking contextmenu directionality',
-    'paste'
-  ],
-  browser_spellcheck: true,
-  toolbar1: 'undo redo | insert | styleselect | bold italic underline | link image | newTopic',
-  content_css: [
-    '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
-    '/css/bootstrap.min.css',
-    '/css/normalize.css',
-    '/css/main.css'
-  ],
-  
-  setup: function (editor) {
-    editor.on('change', contentChanged),
-    editor.on('keyup', periodPressed),
-    editor.addSidebar('mysidebar', {
-      tooltip: 'My sidebar',
-      icon: 'mylist',
-      onrender: function (api) {
-        setContainers();
-        onStart();
-        insertQuestionBadge();
-      }//,
-      // onshow: function (api) {
-      //   updateBadgeCount();
-      // },
-      // onhide: function (api) {
-      //   updateBadgeCount();
-      // }
-    });
 
-  editor.addButton('newTopic', {
-    text: "Set Topic",
-    onclick: defineWord
-  });
-  }
- });
 
 function renderPanel(){
     getElements();
@@ -462,6 +479,8 @@ function updateQuestionsList(){
     window.questions.newQuestion();
     window.questions.renderCandidatesQuestionCards();
     window.questions.renderOldQuestionCards();
+    getElements();
+    setListeners();
     
 }
 

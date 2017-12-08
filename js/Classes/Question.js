@@ -155,7 +155,6 @@ Question.prototype.createQuestionCard = function() {
     var chkDiv = document.createElement("div");
     chkDiv.classList.add('q_div');
     var chkSpan = document.createElement('span');
-    chkSpan.id = "chk_"+this.index;
     chkSpan.classList.add('clickable');
     var chkI = document.createElement('i');
     if(this.relevant===true){
@@ -163,6 +162,7 @@ Question.prototype.createQuestionCard = function() {
     }else{
         chkI.innerHTML = 'check_box_outline_blank';
     }
+    chkI.id = "chk_"+this.index;
     chkI.classList.add('material-icons');
     chkSpan.appendChild(chkI);
     chkDiv.appendChild(chkSpan);
@@ -181,10 +181,10 @@ Question.prototype.createQuestionCard = function() {
     var disSpan = document.createElement('span');
     var disI = document.createElement('i');
     if(this.relevant===null){
-        disSpan.id = "dismiss_"+this.index;
+        disI.id = "dismiss_"+this.index;
         disI.innerHTML = 'not_interested';
     }else{
-        disSpan.id = "restore_"+this.index;
+        disI.id = "restore_"+this.index;
         disI.innerHTML = 'refresh';
     }        
     disSpan.classList.add('clickable');
